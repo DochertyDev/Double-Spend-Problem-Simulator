@@ -12,6 +12,11 @@ This repo contains a webpage with a simple simulator showcasing the double spend
 - Shows the ratio of reserves to total deposits
 - Education mode including hover tooltips with definitions (ex. reserve = portion banks must hold back and cannot loan out) and "Why this matters" explanations at key points
 - Comparison toggle giving ability to run two simulations side by side with different reserve ratios (ex. 10% vs 20%) so users can *see how money creation differ*
+- Inflation impact overlay (optional toggle to show how increasing the money supply might correlate with a basic inflation estimate)
+- Simulation speed control (play/pause button + step-through controls (like a timeline), so users can see each cycle unfold more clearly)
+- Interactive graphs to allow hovering over graph points to see exact values
+- Animate arrows showing money flowing from deposits -> reserves -> loans -> redeposits
+
 
 ## Background
 This is a vibe coding project fueled by my interest in 💵Finance, 📈Economics, and 🖥️Tech! I am not a trained developer and leveraged 🤖AI for the majority of the coding. 
