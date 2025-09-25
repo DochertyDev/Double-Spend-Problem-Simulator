@@ -3,7 +3,7 @@ This repo contains a webpage with a simple simulator showcasing the double spend
 
 ## Features
 - Dynamically set the initial deposit amount
-- Dynamically set the number of times the cycle should occur (or until < $1)
+- Dynamically set the number of times the cycle should occur (or until $0)
 - Dynamically set the fractional-reserve % (default is standard 10%)
 - Key metric dashboard containing starting deposit, created money, and total money
 - Use different colors to differentiate between deposits, reserves, and loans
@@ -17,6 +17,9 @@ This repo contains a webpage with a simple simulator showcasing the double spend
 - Interactive graphs to allow hovering over graph points to see exact values
 - Animate arrows showing money flowing from deposits -> reserves -> loans -> redeposits
 
+## Addititonal Notes
+[[DoubleSpendProblemSimulator.jsx]] was used as a starting point, but will not remain a key part of the simulators development.
+
 
 ## Background
-This is a vibe coding project fueled by my interest in 💵Finance, 📈Economics, and 🖥️Tech! I am not a trained developer and leveraged 🤖AI for the majority of the coding. 
+This is a vibe coding project fueled by my interest in 💵Finance, 📈Economics, and 🖥️Tech! I am not a trained developer and leveraged 🤖AI for the majority of the coding.

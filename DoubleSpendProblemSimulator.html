@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Double Spend Problem Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide-react@0.292.0/dist/lucide-react.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'navy': '#0A192F',
+                        'light-navy': '#112240',
+                        'lightest-navy': '#233554',
+                        'slate': '#8892b0',
+                        'light-slate': '#a8b2d1',
+                        'lightest-slate': '#ccd6f6',
+                        'white': '#e6f1ff',
+                        'green': '#64ffda',
+                        'custom-yellow': '#FFD700',
+                        'custom-red': '#DC143C',
+                        'custom-blue': '#87CEEB',
+                        'custom-orange': '#FFA500'
+                    },
+                },
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #e6f1ff;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #233554;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+        }
+         .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #233554 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 44px;
+          height: 24px;
+        }
+        .switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #233554;
+          transition: .4s;
+          border-radius: 24px;
+        }
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 16px;
+          width: 16px;
+          left: 4px;
+          bottom: 4px;
+          background-color: white;
+          transition: .4s;
+          border-radius: 50%;
+        }
+        input:checked + .slider {
+          background-color: #64ffda;
+        }
+        input:checked + .slider:before {
+          transform: translateX(20px);
+        }
+        .tab-button.active {
+            background-color: #64ffda;
+            color: #0A192F;
+        }
+        .step-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #flow-canvas-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-navy">
+
+    <div id="app" class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-light-navy shadow-lg p-4 flex justify-between items-center z-10">
+            <h1 class="text-2xl font-bold text-green">Double Spend Problem Simulator‼️🏧</h1>
+            <div class="flex items-center space-x-3">
+                <span class="text-slate text-sm">Education Mode</span>
+                <label class="switch tooltip">
+                    <input type="checkbox" id="education-toggle">
+                    <span class="slider"></span>
+                    <span class="tooltiptext">Activates tooltips and "Why this matters" explanations.</span>
+                </label>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow flex flex-col md:flex-row p-4 gap-4">
+            <!-- Control Panel -->
+            <aside class="w-full md:w-1/4 bg-light-navy p-6 rounded-lg shadow-xl flex flex-col gap-6">
+                <div id="setup-controls-primary">
+                    <h2 class="text-lg font-semibold text-lightest-slate border-b border-lightest-navy pb-2">Simulation Setup</h2>
+                    <div class="space-y-4 mt-4">
+                         <div>
+                            <label for="initial-deposit" class="text-sm text-slate tooltip">Initial Deposit
+                                <span class="tooltiptext">The starting amount of money deposited into the bank.</span>
+                            </label>
+                            <input type="number" id="initial-deposit" value="1000" class="w-full bg-navy border border-lightest-navy rounded-md p-2 text-lightest-slate focus:ring-2 focus:ring-green focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="reserve-ratio" class="text-sm text-slate tooltip">Reserve Ratio (%)
+                                <span class="tooltiptext">The percentage of deposits that banks are required to hold in reserve, not lend out.</span>
+                            </label>
+                            <input type="number" id="reserve-ratio" value="10" min="1" max="100" class="w-full bg-navy border border-lightest-navy rounded-md p-2 text-lightest-slate focus:ring-2 focus:ring-green focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="num-cycles" class="text-sm text-slate tooltip">Number of Cycles
+                                <span class="tooltiptext">The number of times the deposit-loan cycle repeats.</span>
+                            </label>
+                            <input type="number" id="num-cycles" value="10" min="1" class="w-full bg-navy border border-lightest-navy rounded-md p-2 text-lightest-slate focus:ring-2 focus:ring-green focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="redeposit-rate" class="text-sm text-slate tooltip">Loan Re-deposit Rate (%)
+                                 <span class="tooltiptext">The percentage of loaned money that is spent and then re-deposited into the banking system.</span>
+                            </label>
+                             <input type="range" id="redeposit-rate" value="100" min="0" max="100" class="w-full h-2 bg-lightest-navy rounded-lg appearance-none cursor-pointer">
+                             <div class="text-center text-sm text-slate" id="redeposit-rate-value">100%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="setup-controls-secondary" class="hidden">
+                    <h2 class="text-lg font-semibold text-lightest-slate border-b border-lightest-navy pb-2">Comparison Setup</h2>
+                    <div class="space-y-4 mt-4">
+                        <div>
+                            <label for="reserve-ratio-comp" class="text-sm text-slate">Reserve Ratio (%)</label>
+                            <input type="number" id="reserve-ratio-comp" value="20" min="1" max="100" class="w-full bg-navy border border-lightest-navy rounded-md p-2 text-lightest-slate focus:ring-2 focus:ring-green focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-lightest-slate border-b border-lightest-navy pb-2">Controls</h2>
+                     <div class="mt-4 space-y-4">
+                        <div>
+                            <label for="sim-speed" class="text-sm text-slate">Simulation Speed</label>
+                            <input type="range" id="sim-speed" min="1" max="10" value="5" class="w-full h-2 bg-lightest-navy rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                             <button id="step-prev" class="step-button bg-lightest-navy p-2 rounded-md hover:bg-green hover:text-navy disabled:hover:bg-lightest-navy disabled:hover:text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                             </button>
+                             <button id="play-pause" class="bg-green text-navy p-2 rounded-full w-12 h-12 flex items-center justify-center text-2xl font-bold hover:opacity-80">
+                                <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                             </button>
+                             <button id="step-next" class="step-button bg-lightest-navy p-2 rounded-md hover:bg-green hover:text-navy disabled:hover:bg-lightest-navy disabled:hover:text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                             </button>
+                        </div>
+                        <button id="run-simulation" class="w-full bg-green text-navy font-bold py-2 px-4 rounded-md hover:opacity-90 transition-opacity">Run Simulation</button>
+                     </div>
+                </div>
+                
+                <div class="space-y-4 pt-4 border-t border-lightest-navy">
+                    <div class="flex items-center justify-between">
+                         <label for="comparison-toggle" class="text-sm text-slate tooltip">Comparison
+                            <span class="tooltiptext">Run a second simulation side-by-side with a different reserve ratio.</span>
+                         </label>
+                         <label class="switch"><input type="checkbox" id="comparison-toggle"><span class="slider"></span></label>
+                    </div>
+                     <div class="flex items-center justify-between">
+                         <label for="inflation-toggle" class="text-sm text-slate tooltip">Inflation Impact
+                            <span class="tooltiptext">Overlay a basic inflation estimate on the graph based on the increase in money supply.</span>
+                         </label>
+                         <label class="switch"><input type="checkbox" id="inflation-toggle"><span class="slider"></span></label>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Display -->
+            <section class="w-full md:w-3/4 bg-light-navy p-6 rounded-lg shadow-xl flex flex-col">
+                 <!-- Key Metrics -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-navy p-4 rounded-lg text-center">
+                        <h3 class="text-sm text-slate">Starting Deposit</h3>
+                        <p id="metric-starting-deposit" class="text-2xl font-bold text-green">$1,000</p>
+                    </div>
+                    <div class="bg-navy p-4 rounded-lg text-center">
+                        <h3 class="text-sm text-slate">Money Created</h3>
+                        <p id="metric-money-created" class="text-2xl font-bold text-custom-red">$0</p>
+                    </div>
+                    <div class="bg-navy p-4 rounded-lg text-center">
+                        <h3 class="text-sm text-slate">Total Money Supply</h3>
+                        <p id="metric-total-money" class="text-2xl font-bold text-custom-orange">$1,000</p>
+                    </div>
+                    <div class="bg-navy p-4 rounded-lg text-center">
+                        <h3 class="text-sm text-slate">Reserve-to-Deposit Ratio</h3>
+                        <p id="metric-reserve-ratio" class="text-2xl font-bold text-custom-blue">10%</p>
+                    </div>
+                </div>
+
+                <!-- Tab Selector -->
+                <div class="flex space-x-1 bg-navy p-1 rounded-lg mb-4">
+                    <button class="tab-button flex-1 py-2 px-4 rounded-md text-sm font-medium text-slate hover:bg-lightest-navy active" data-tab="flow">3D Flow Diagram</button>
+                    <button class="tab-button flex-1 py-2 px-4 rounded-md text-sm font-medium text-slate hover:bg-lightest-navy" data-tab="table">Table View</button>
+                    <button class="tab-button flex-1 py-2 px-4 rounded-md text-sm font-medium text-slate hover:bg-lightest-navy" data-tab="graph">Graph View</button>
+                </div>
+
+                <!-- Tab Content -->
+                <div id="tab-content" class="flex-grow bg-navy rounded-lg relative">
+                    <div id="flow-view" class="tab-pane active h-full w-full">
+                        <div id="flow-canvas-container" class="h-full w-full rounded-lg"></div>
+                         <div id="flow-legend" class="absolute bottom-2 left-2 bg-light-navy/80 p-2 rounded-md text-xs">
+                            <div class="flex items-center"><div class="w-3 h-3 rounded-full bg-green mr-2"></div>Initial Deposit</div>
+                            <div class="flex items-center"><div class="w-3 h-3 rounded-full bg-yellow-400 mr-2"></div>Re-Deposits</div>
+                            <div class="flex items-center"><div class="w-3 h-3 rounded-full bg-sky-400 mr-2"></div>Reserves</div>
+                            <div class="flex items-center"><div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>Loans</div>
+                        </div>
+                    </div>
+                    <div id="table-view" class="tab-pane hidden p-4 overflow-auto h-[500px] md:h-auto">
+                        <table class="w-full text-sm text-left text-light-slate">
+                            <thead class="text-xs text-lightest-slate uppercase bg-light-navy">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">Cycle</th>
+                                    <th scope="col" class="px-6 py-3">Deposits</th>
+                                    <th scope="col" class="px-6 py-3">Reserves</th>
+                                    <th scope="col" class="px-6 py-3">Loans</th>
+                                    <th scope="col" class="px-6 py-3">Total Money</th>
+                                </tr>
+                            </thead>
+                            <tbody id="simulation-table-body">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="graph-view" class="tab-pane hidden p-4 h-full w-full">
+                         <canvas id="simulation-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DOM Elements ---
+        const initialDepositEl = document.getElementById('initial-deposit');
+        const reserveRatioEl = document.getElementById('reserve-ratio');
+        const numCyclesEl = document.getElementById('num-cycles');
+        const redepositRateEl = document.getElementById('redeposit-rate');
+        const redepositRateValueEl = document.getElementById('redeposit-rate-value');
+        const runSimulationBtn = document.getElementById('run-simulation');
+
+        const reserveRatioCompEl = document.getElementById('reserve-ratio-comp');
+        const setupControlsSecondary = document.getElementById('setup-controls-secondary');
+        const comparisonToggle = document.getElementById('comparison-toggle');
+        const inflationToggle = document.getElementById('inflation-toggle');
+
+        const playPauseBtn = document.getElementById('play-pause');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const stepPrevBtn = document.getElementById('step-prev');
+        const stepNextBtn = document.getElementById('step-next');
+        const simSpeedEl = document.getElementById('sim-speed');
+
+        const metricStart = document.getElementById('metric-starting-deposit');
+        const metricCreated = document.getElementById('metric-money-created');
+        const metricTotal = document.getElementById('metric-total-money');
+        const metricReserveRatio = document.getElementById('metric-reserve-ratio');
+
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        const tableBody = document.getElementById('simulation-table-body');
+        const chartCanvas = document.getElementById('simulation-chart');
+        const flowContainer = document.getElementById('flow-canvas-container');
+
+        // --- State ---
+        let simulationData = [];
+        let simulationDataComp = [];
+        let chart;
+        let isPlaying = false;
+        let currentCycle = 0;
+        let animationInterval;
+        let educationMode = false;
+        
+        // --- 3D Flow Diagram (Three.js) ---
+        let scene, camera, renderer, nodes = {}, particles = [];
+        
+        function initFlowDiagram() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, flowContainer.clientWidth / flowContainer.clientHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(flowContainer.clientWidth, flowContainer.clientHeight);
+            flowContainer.innerHTML = '';
+            flowContainer.appendChild(renderer.domElement);
+            camera.position.z = 10;
+        
+            const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+            
+            nodes.deposits = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xffff00 }));
+            nodes.deposits.position.set(-4, 2, 0);
+            scene.add(nodes.deposits);
+        
+            nodes.reserves = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0x87CEEB }));
+            nodes.reserves.position.set(0, -2, 0);
+            scene.add(nodes.reserves);
+
+            nodes.loans = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xDC143C }));
+            nodes.loans.position.set(4, 2, 0);
+            scene.add(nodes.loans);
+            
+            const addText = (text, position) => {
+                const loader = new THREE.FontLoader();
+                loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+                    const textGeo = new THREE.TextGeometry(text, { font: font, size: 0.4, height: 0.1 });
+                    const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                    const textMesh = new THREE.Mesh(textGeo, textMat);
+                    textMesh.position.set(position.x - 0.7, position.y - 1.2, position.z);
+                    scene.add(textMesh);
+                });
+            };
+
+            addText("DEPOSITS", nodes.deposits.position);
+            addText("RESERVES", nodes.reserves.position);
+            addText("LOANS", nodes.loans.position);
+
+            animateFlow();
+        }
+        
+        function animateFlow() {
+            requestAnimationFrame(animateFlow);
+            particles.forEach(p => {
+                p.mesh.position.lerp(p.target, p.speed);
+                if (p.mesh.position.distanceTo(p.target) < 0.1) {
+                    scene.remove(p.mesh);
+                    particles.splice(particles.indexOf(p), 1);
+                }
+            });
+            renderer.render(scene, camera);
+        }
+
+        function createParticles(startNode, endNode, count, color) {
+            const startPos = nodes[startNode].position;
+            const endPos = nodes[endNode].position;
+            for (let i = 0; i < count; i++) {
+                const geometry = new THREE.SphereGeometry(0.05, 8, 8);
+                const material = new THREE.MeshBasicMaterial({ color: color });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(startPos.x + (Math.random() - 0.5), startPos.y + (Math.random() - 0.5), startPos.z);
+                particles.push({ mesh: mesh, target: endPos, speed: 0.01 + Math.random() * 0.02 });
+                scene.add(mesh);
+            }
+        }
+        
+        window.addEventListener('resize', () => {
+             if (renderer && camera) {
+                camera.aspect = flowContainer.clientWidth / flowContainer.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(flowContainer.clientWidth, flowContainer.clientHeight);
+            }
+        });
+
+
+        // --- Simulation Logic ---
+        function runSimulation() {
+            const initialDeposit = parseFloat(initialDepositEl.value);
+            const reserveRatio = parseFloat(reserveRatioEl.value) / 100;
+            const cycles = parseInt(numCyclesEl.value);
+            const redepositRate = parseFloat(redepositRateEl.value) / 100;
+            const reserveRatioComp = parseFloat(reserveRatioCompEl.value) / 100;
+
+            simulationData = calculateData(initialDeposit, reserveRatio, cycles, redepositRate);
+            if(comparisonToggle.checked) {
+                simulationDataComp = calculateData(initialDeposit, reserveRatioComp, cycles, redepositRate);
+            } else {
+                simulationDataComp = [];
+            }
+            
+            resetSimulation();
+        }
+
+        function calculateData(initialDeposit, reserveRatio, cycles, redepositRate) {
+            let data = [];
+            let currentDeposit = initialDeposit;
+            let totalMoney = initialDeposit;
+            let totalReserves = 0;
+            let totalLoans = 0;
+
+            for (let i = 0; i < cycles; i++) {
+                if (currentDeposit < 0.01) break;
+                const reserve = currentDeposit * reserveRatio;
+                const loan = currentDeposit - reserve;
+                
+                totalReserves += reserve;
+                totalLoans += loan;
+                totalMoney += (loan * redepositRate);
+
+                data.push({
+                    cycle: i + 1,
+                    deposit: currentDeposit,
+                    reserve: reserve,
+                    loan: loan,
+                    totalMoney: totalMoney,
+                    totalReserves: totalReserves,
+                });
+
+                currentDeposit = loan * redepositRate;
+            }
+            return data;
+        }
+
+        function updateUI(cycleIndex) {
+            if (cycleIndex < 0 || cycleIndex >= simulationData.length) return;
+            
+            const dataPoint = simulationData[cycleIndex];
+            
+            // Highlight table row
+            document.querySelectorAll('#simulation-table-body tr').forEach((row, index) => {
+                row.classList.toggle('bg-lightest-navy', index === cycleIndex);
+            });
+            
+            // Trigger particle flow
+             const loanParticles = Math.max(1, Math.round(dataPoint.loan / simulationData[0].deposit * 50));
+             const reserveParticles = Math.max(1, Math.round(dataPoint.reserve / simulationData[0].deposit * 50));
+             const depositColor = cycleIndex === 0 ? 0x64ffda : 0xffff00;
+
+             createParticles('deposits', 'reserves', reserveParticles, 0x87CEEB);
+             createParticles('deposits', 'loans', loanParticles, 0xDC143C);
+             setTimeout(() => {
+                createParticles('loans', 'deposits', Math.round(loanParticles * (redepositRateEl.value / 100)), depositColor);
+             }, 1000);
+
+            // Update chart highlight
+            if(chart) {
+                chart.setActiveElements([{ datasetIndex: 0, index: cycleIndex }]);
+                chart.update();
+            }
+        }
+        
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+        }
+
+        // --- Render Functions ---
+        function renderAll() {
+             renderMetrics();
+             renderTable();
+             renderChart();
+             updateStepButtons();
+        }
+
+        function renderMetrics() {
+            const initialDeposit = parseFloat(initialDepositEl.value);
+            metricStart.textContent = formatCurrency(initialDeposit);
+
+            if (simulationData.length > 0) {
+                const lastCycle = simulationData[simulationData.length - 1];
+                metricCreated.textContent = formatCurrency(lastCycle.totalMoney - initialDeposit);
+                metricTotal.textContent = formatCurrency(lastCycle.totalMoney);
+                const ratio = lastCycle.totalReserves / (lastCycle.totalMoney - (lastCycle.totalLoans - (lastCycle.deposit-lastCycle.reserve))) * 100;
+                metricReserveRatio.textContent = `${(parseFloat(reserveRatioEl.value))}% (${ratio.toFixed(2)}%)`;
+            } else {
+                metricCreated.textContent = formatCurrency(0);
+                metricTotal.textContent = formatCurrency(initialDeposit);
+                metricReserveRatio.textContent = `${parseFloat(reserveRatioEl.value)}%`;
+            }
+        }
+
+        function renderTable() {
+            tableBody.innerHTML = '';
+            simulationData.forEach(d => {
+                const row = `
+                    <tr class="bg-navy border-b border-lightest-navy">
+                        <td class="px-6 py-4">${d.cycle}</td>
+                        <td class="px-6 py-4 text-custom-yellow">${formatCurrency(d.deposit)}</td>
+                        <td class="px-6 py-4 text-custom-blue">${formatCurrency(d.reserve)}</td>
+                        <td class="px-6 py-4 text-custom-red">${formatCurrency(d.loan)}</td>
+                        <td class="px-6 py-4 text-custom-orange">${formatCurrency(d.totalMoney)}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function renderChart() {
+            const labels = simulationData.map(d => `Cycle ${d.cycle}`);
+            const totalMoneyData = simulationData.map(d => d.totalMoney);
+            const totalReservesData = simulationData.map(d => d.totalReserves);
+
+            const datasets = [
+                {
+                    label: `Total Money (Reserve: ${reserveRatioEl.value}%)`,
+                    data: totalMoneyData,
+                    borderColor: '#FFA500',
+                    backgroundColor: 'rgba(255, 165, 0, 0.1)',
+                    fill: true,
+                    tension: 0.1
+                },
+                {
+                    label: `Total Reserves (Reserve: ${reserveRatioEl.value}%)`,
+                    data: totalReservesData,
+                    borderColor: '#87CEEB',
+                    backgroundColor: 'rgba(135, 206, 235, 0.1)',
+                    fill: true,
+                    tension: 0.1
+                }
+            ];
+
+            if (comparisonToggle.checked && simulationDataComp.length > 0) {
+                 datasets.push({
+                    label: `Total Money (Reserve: ${reserveRatioCompEl.value}%)`,
+                    data: simulationDataComp.map(d => d.totalMoney),
+                    borderColor: '#FF6384',
+                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                    fill: true,
+                    tension: 0.1
+                 });
+            }
+            
+            if (inflationToggle.checked) {
+                const initialDeposit = parseFloat(initialDepositEl.value);
+                const inflationData = totalMoneyData.map(tm => ((tm / initialDeposit) - 1) * 2); // Simple inflation proxy (e.g., 2% base)
+                datasets.push({
+                    label: 'Estimated Inflation Impact',
+                    data: inflationData,
+                    borderColor: '#4BC0C0',
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    yAxisID: 'y1',
+                    tension: 0.1,
+                });
+            }
+
+            const chartConfig = {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: { 
+                            ticks: { color: '#a8b2d1' }, 
+                            grid: { color: 'rgba(168, 178, 209, 0.1)' } 
+                        },
+                        y: { 
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            ticks: { color: '#a8b2d1' }, 
+                            grid: { color: 'rgba(168, 178, 209, 0.1)' } 
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: inflationToggle.checked,
+                            position: 'right',
+                             ticks: { 
+                                color: '#a8b2d1',
+                                callback: function(value) { return value.toFixed(2) + '%' }
+                            },
+                            grid: { drawOnChartArea: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#a8b2d1' } },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) {
+                                        if(context.dataset.yAxisID === 'y1'){
+                                             label += context.parsed.y.toFixed(2) + '%';
+                                        } else {
+                                             label += formatCurrency(context.parsed.y);
+                                        }
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            if (chart) {
+                chart.destroy();
+            }
+            chart = new Chart(chartCanvas, chartConfig);
+        }
+
+        // --- Event Handlers & Controls ---
+        runSimulationBtn.addEventListener('click', runSimulation);
+
+        redepositRateEl.addEventListener('input', (e) => {
+            redepositRateValueEl.textContent = `${e.target.value}%`;
+        });
+        
+        comparisonToggle.addEventListener('change', (e) => {
+            setupControlsSecondary.classList.toggle('hidden', !e.target.checked);
+            if(simulationData.length > 0) runSimulation();
+        });
+        
+        inflationToggle.addEventListener('change', () => {
+             if(simulationData.length > 0) renderChart();
+        });
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabPanes.forEach(pane => pane.classList.add('hidden'));
+
+                button.classList.add('active');
+                document.getElementById(`${button.dataset.tab}-view`).classList.remove('hidden');
+                if (button.dataset.tab === 'flow' && !scene) {
+                    initFlowDiagram();
+                }
+            });
+        });
+
+        function playSimulation() {
+            if (simulationData.length === 0) runSimulation();
+            if (currentCycle >= simulationData.length - 1) currentCycle = -1;
+            
+            isPlaying = true;
+            playIcon.classList.add('hidden');
+            pauseIcon.classList.remove('hidden');
+
+            const speed = (11 - simSpeedEl.value) * 200;
+            animationInterval = setInterval(() => {
+                currentCycle++;
+                if (currentCycle >= simulationData.length) {
+                    pauseSimulation();
+                    return;
+                }
+                updateUI(currentCycle);
+                updateStepButtons();
+            }, speed);
+        }
+
+        function pauseSimulation() {
+            isPlaying = false;
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
+            clearInterval(animationInterval);
+        }
+        
+        function resetSimulation() {
+             pauseSimulation();
+             currentCycle = -1; // -1 so first "next" goes to 0
+             renderAll();
+             stepNext(); // Show first step
+        }
+
+        function stepNext() {
+            if (currentCycle < simulationData.length - 1) {
+                currentCycle++;
+                updateUI(currentCycle);
+                updateStepButtons();
+            }
+        }
+
+        function stepPrev() {
+            if (currentCycle > 0) {
+                currentCycle--;
+                updateUI(currentCycle);
+                 updateStepButtons();
+            }
+        }
+        
+        function updateStepButtons() {
+            stepPrevBtn.disabled = currentCycle <= 0;
+            stepNextBtn.disabled = currentCycle >= simulationData.length - 1;
+        }
+
+        playPauseBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                pauseSimulation();
+            } else {
+                playSimulation();
+            }
+        });
+        
+        stepNextBtn.addEventListener('click', stepNext);
+        stepPrevBtn.addEventListener('click', stepPrev);
+        simSpeedEl.addEventListener('input', () => {
+            if (isPlaying) {
+                pauseSimulation();
+                playSimulation();
+            }
+        });
+
+        // --- Initialisation ---
+        initFlowDiagram();
+        runSimulation();
+    });
+    </script>
+
+</body>
+</html>
