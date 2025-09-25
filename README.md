@@ -30,8 +30,5 @@ This repo contains a webpage with a simple simulator showcasing the double spend
 - Simulation speed control with play/pause and step-through timeline navigation.
 - Use of distinct colors to differentiate deposits, reserves, and loans.
 
-## Addititonal Notes
-[DoubleSpendProblemSimulator.jsx](https://github.com/DochertyDev/Double-Spend-Problem-Simulator/blob/ffb2032e0c14c872e2456b907ef75019b47e9b3a/DoubleSpendProblemSimulatorUI.jsx) was used as a starting point, but will not remain a key part of the simulators development. The [DoubleSpendProblemSimulator.html](https://github.com/DochertyDev/Double-Spend-Problem-Simulator/blob/ffb2032e0c14c872e2456b907ef75019b47e9b3a/DoubleSpendProblemSimulator.html) is going to be the main project file.
-
 ## Background
 This is a vibe coding project fueled by my interest in 💵Finance, 📈Economics, and 🖥️Tech! I am not a trained developer and leveraged 🤖AI for the majority of the coding.
