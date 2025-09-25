@@ -1,7 +1,6 @@
 # Double Spend Problem Simulator‼️🏧
 This repo contains a webpage with a simple simulator showcasing the double spend problem. This problem occurs (in this example) due to fraction-reserve banking leading to money creation, but there are other cases where the double spend problem can apply.
 
----
 ## Features
 - Dynamically set the initial deposit amount
 - Dynamically set the number of times the cycle should occur (or until < $1)
@@ -14,7 +13,5 @@ This repo contains a webpage with a simple simulator showcasing the double spend
 - Education mode including hover tooltips with definitions (ex. reserve = portion banks must hold back and cannot loan out) and "Why this matters" explanations at key points
 - Comparison toggle giving ability to run two simulations side by side with different reserve ratios (ex. 10% vs 20%) so users can *see how money creation differ*
 
-
----
 ## Background
 This is a vibe coding project fueled by my interest in 💵Finance, 📈Economics, and 🖥️Tech! I am not a trained developer and leveraged 🤖AI for the majority of the coding. 
