@@ -7,7 +7,7 @@ This repo contains a webpage with a simple simulator showcasing the double spend
 - Dynamically set the fractional-reserve % (default is standard 10%)
 - Key metric dashboard containing starting deposit, created money, and total money
 - Use different colors to differentiate between deposits, reserves, and loans
-- Ability to toggle between a flow diagram view, table view (showing deposits, reserves, loans, and total money at each step), and graph view (plotting growth of total money and reserves over cycles)
+- Ability to toggle between a 3D flow diagram view (showing money movement with particle effects), table view (showing deposits, reserves, loans, and total money at each step), and graph view (plotting growth of total money and reserves over cycles)
 - Ability for users to change whether 100% of loaned money is spent and redeposited
 - Shows the ratio of reserves to total deposits
 - Education mode including hover tooltips with definitions (ex. reserve = portion banks must hold back and cannot loan out) and "Why this matters" explanations at key points
