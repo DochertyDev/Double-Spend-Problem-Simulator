@@ -20,6 +20,5 @@ This repo contains a webpage with a simple simulator showcasing the double spend
 ## Addititonal Notes
 [[DoubleSpendProblemSimulator.jsx]] was used as a starting point, but will not remain a key part of the simulators development. The [[DoubleSpendProblemSimulator.html]] is going to be the main project file.
 
-
 ## Background
 This is a vibe coding project fueled by my interest in 💵Finance, 📈Economics, and 🖥️Tech! I am not a trained developer and leveraged 🤖AI for the majority of the coding.
