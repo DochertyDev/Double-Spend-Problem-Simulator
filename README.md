@@ -30,5 +30,3 @@ This repo contains a webpage with a simple simulator showcasing the double spend
 - Simulation speed control with play/pause and step-through timeline navigation.
 - Use of distinct colors to differentiate deposits, reserves, and loans.
 
-## Background
-This is a vibe coding project fueled by my interest in 💵Finance, 📈Economics, and 🖥️Tech! I am not a trained developer and leveraged 🤖AI for the majority of the coding.
