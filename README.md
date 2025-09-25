@@ -2,20 +2,28 @@
 This repo contains a webpage with a simple simulator showcasing the double spend problem. This problem occurs (in this example) due to fraction-reserve banking leading to money creation, but there are other cases where the double spend problem can apply.
 
 ## Features (in progress)
-- Dynamically set the initial deposit amount
-- Dynamically set the number of times the cycle should occur (or until $0)
-- Dynamically set the fractional-reserve % (default is standard 10%)
-- Key metric dashboard containing starting deposit, created money, and total money
-- Use different colors to differentiate between deposits, reserves, and loans
-- Ability to toggle between a 3D flow diagram view (showing money movement with particle effects), table view (showing deposits, reserves, loans, and total money at each step), and graph view (plotting growth of total money and reserves over cycles)
-- Ability for users to change whether 100% of loaned money is spent and redeposited
-- Shows the ratio of reserves to total deposits
-- Education mode including hover tooltips with definitions (ex. reserve = portion banks must hold back and cannot loan out) and "Why this matters" explanations at key points
-- Comparison toggle giving ability to run two simulations side by side with different reserve ratios (ex. 10% vs 20%) so users can *see how money creation differ*
-- Inflation impact overlay (optional toggle to show how increasing the money supply might correlate with a basic inflation estimate)
-- Simulation speed control (play/pause button + step-through controls (like a timeline), so users can see each cycle unfold more clearly)
-- Interactive graphs to allow hovering over graph points to see exact values
-- Animate arrows showing money flowing from deposits -> reserves -> loans -> redeposits
+**1. Customizable Inputs**
+- Set the initial deposit amount.
+- Define the number of cycles (or run until the balance reaches $0).
+- Adjust the fractional-reserve percentage (default: 10%).
+- Choose whether 100% of loaned money is spent and redeposited.
+**2. Visualization Modes**
+- Toggle between multiple views:
+    - **3D Flow Diagram** – shows money movement with particle effects and animated arrows (deposits → reserves → loans → redeposits).
+    - **Table View** – displays deposits, reserves, loans, and total money at each step.
+    - **Graph View** – plots growth of total money and reserves across cycles.
+**3. Metrics & Tracking**
+- Dashboard displaying key values: starting deposit, money created, and total money.
+- Shows the ratio of reserves to total deposits.
+- Interactive graphs with hover-over details for exact values.
+**4. Comparison & Analysis**
+- Side-by-side simulation mode to compare scenarios with different reserve ratios (e.g., 10% vs 20%).
+- Optional inflation impact overlay to estimate how money supply growth might correlate with inflation.
+**5. Educational Features**
+- “Education Mode” with hover tooltips defining key terms (e.g., *reserve = portion banks must hold back*) and context boxes explaining “*Why this matters.*”
+**6. Controls & Interactivity**
+- Simulation speed control with play/pause and step-through timeline navigation.
+- Use of distinct colors to differentiate deposits, reserves, and loans.
 
 ## Addititonal Notes
 [DoubleSpendProblemSimulator.jsx](https://github.com/DochertyDev/Double-Spend-Problem-Simulator/blob/ffb2032e0c14c872e2456b907ef75019b47e9b3a/DoubleSpendProblemSimulatorUI.jsx) was used as a starting point, but will not remain a key part of the simulators development. The [DoubleSpendProblemSimulator.html](https://github.com/DochertyDev/Double-Spend-Problem-Simulator/blob/ffb2032e0c14c872e2456b907ef75019b47e9b3a/DoubleSpendProblemSimulator.html) is going to be the main project file.
