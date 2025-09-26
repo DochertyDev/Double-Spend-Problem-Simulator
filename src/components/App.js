@@ -11,7 +11,8 @@ export class App {
     this.state = {
       simulationState: null,
       currentView: 'table',
-      educationMode: false
+      educationMode: false,
+      simulationSpeed: 5 // Default speed
     };
 
     this.init();
@@ -58,7 +59,7 @@ export class App {
     if (controlsEl && dashboardEl && tableViewEl && graphViewEl && flowDiagramEl) {
       this.controls = new Controls(controlsEl, {
         onSimulationStart: (config) => this.handleSimulationStart(config),
-        onPause: () => this.pauseSimulation(),
+        onPause: () => this.togglePause(),
         onStep: () => this.stepSimulation(),
       });
       this.dashboard = new Dashboard(dashboardEl);
@@ -83,6 +84,7 @@ export class App {
   handleSimulationStart(config) {
     this.state.simulationState = new SimulationState(config);
     this.state.simulationState.status = 'running'; // Set status to running
+    this.state.simulationSpeed = config.simulationSpeed;
     this.startSimulation();
   }
 
@@ -92,21 +94,34 @@ export class App {
     this.state.simulationState.processNextCycle();
     this.updateUI();
 
-    this.animationFrameId = requestAnimationFrame(() => this.startSimulation());
-
     if (this.state.simulationState.status === 'finished') {
-      cancelAnimationFrame(this.animationFrameId);
+      clearTimeout(this.animationFrameId);
+      this.controls.simulationFinished(); // Call the new method
+    } else {
+      // Adjust the timeout based on the simulation speed
+      const timeout = 1000 / this.state.simulationSpeed;
+      this.animationFrameId = setTimeout(() => this.startSimulation(), timeout);
+    }
+  }
+
+  togglePause() {
+    if (this.state.simulationState.status === 'running') {
+      this.pauseSimulation();
+    } else if (this.state.simulationState.status === 'paused') {
+      this.unpauseSimulation();
     }
   }
 
   pauseSimulation() {
     this.state.simulationState.status = 'paused';
-    cancelAnimationFrame(this.animationFrameId);
+    clearTimeout(this.animationFrameId);
+    this.controls.setPauseButtonState(true);
   }
 
-  resumeSimulation() {
+  unpauseSimulation() {
     this.state.simulationState.status = 'running';
     this.startSimulation();
+    this.controls.setPauseButtonState(false);
   }
 
   stepSimulation() {

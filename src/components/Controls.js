@@ -18,6 +18,10 @@ export class Controls {
           <label for="reserve-ratio">Reserve Ratio:</label>
           <input type="number" id="reserve-ratio" min="0" max="1" step="0.1" value="0.1">
         </div>
+        <div class="input-group">
+          <label for="simulation-speed">Simulation Speed: <span id="speed-label">5 tps</span></label>
+          <input type="range" id="simulation-speed" min="1" max="20" value="5">
+        </div>
         <div class="simulation-controls">
           <button id="run-simulation">Run Simulation</button>
           <button id="pause-simulation" disabled>Pause</button>
@@ -35,17 +39,23 @@ export class Controls {
     const stepButton = this.container.querySelector('#step-simulation');
     const depositInput = this.container.querySelector('#initial-deposit');
     const ratioInput = this.container.querySelector('#reserve-ratio');
+    const speedInput = this.container.querySelector('#simulation-speed');
+    const speedLabel = this.container.querySelector('#speed-label');
 
     const updateButtons = () => this.validateInputs();
 
     depositInput.addEventListener('input', updateButtons);
     ratioInput.addEventListener('input', updateButtons);
+    speedInput.addEventListener('input', () => {
+      speedLabel.textContent = speedInput.value + ' tps';
+    });
 
     runButton.addEventListener('click', () => {
       if (this.validateInputs()) {
         const config = {
           initialDeposit: parseFloat(depositInput.value),
-          reserveRatio: parseFloat(ratioInput.value)
+          reserveRatio: parseFloat(ratioInput.value),
+          simulationSpeed: parseInt(speedInput.value, 10)
         };
         this.onSimulationStart(config);
         runButton.disabled = true;
@@ -83,5 +93,18 @@ export class Controls {
     runButton.disabled = !isValid;
 
     return isValid;
+  }
+
+  simulationFinished() {
+    const runButton = this.container.querySelector('#run-simulation');
+    runButton.textContent = 'Rerun';
+    runButton.disabled = false;
+    this.container.querySelector('#pause-simulation').disabled = true;
+    this.container.querySelector('#step-simulation').disabled = true;
+  }
+
+  setPauseButtonState(isPaused) {
+    const pauseButton = this.container.querySelector('#pause-simulation');
+    pauseButton.textContent = isPaused ? 'Unpause' : 'Pause';
   }
 }
