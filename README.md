@@ -47,28 +47,42 @@ The Double Spend Problem Simulator illustrates how fractional-reserve banking ca
 
 ## 💻 Technology Stack
 - HTML5, CSS3, JavaScript (ES6+)
+- Vite for development and bundling
 - D3.js for dynamic visualizations
 - Chart.js for graphing
 - Jest and Testing Library for testing
 
 ## 🚀 Getting Started
 
-1. Clone the repository
-```bash
-git clone https://github.com/DochertyDev/Double-Spend-Problem-Simulator.git
-```
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/DochertyDev/Double-Spend-Problem-Simulator.git
+    ```
 
-2. Install dependencies
-```bash
-npm install
-```
+2.  **Navigate to the project directory**
+    ```bash
+    cd Double-Spend-Problem-Simulator
+    ```
 
-3. Run tests (note the tests may fail but step 4. should still work)
+3.  **Install dependencies**
+    ```bash
+    npm install
+    ```
+
+4.  **Run the development server**
+    ```bash
+    npm run dev
+    ```
+
+5.  **Open the application**
+    Open the URL provided by Vite (usually `http://localhost:5173`) in your browser to start the simulation.
+
+## 🧪 Running Tests
+
+To run the test suite:
 ```bash
 npm test
 ```
-
-4. Open `index.html` in your browser to start the simulation
 
 ## 🛠️ Development
 
@@ -76,15 +90,12 @@ This project follows Test-Driven Development (TDD) principles and maintains high
 
 ### 📂 Project Structure
 ```
-src/
-├── components/    # UI components
-├── services/     # Core simulation logic
-├── styles/       # CSS styling
-└── index.html    # Main entry point
-
-tests/
-├── integration/  # Integration tests
-└── unit/        # Unit tests
+.
+├── index.html        # Main HTML entry point
+├── package.json
+└── src/
+    ├── main.js       # Application entry script
+    ├── components/   # UI components (App, Controls, etc.)
+    ├── services/     # Core simulation logic
+    └── styles/       # CSS styling
 ```
-
-
