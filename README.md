@@ -1,32 +1,90 @@
-# Double Spend Problem Simulator‼️🏧
-This repo contains a webpage with a simple simulator showcasing the double spend problem. This problem occurs (in this example) due to fraction-reserve banking leading to money creation, but there are other cases where the double spend problem can apply.
+# Double Spend Problem Simulator ‼️💰
 
-## Features (in progress)
-**1. Customizable Inputs**
-- Set the initial deposit amount.
-- Define the number of cycles (or run until the balance reaches $0).
-- Adjust the fractional-reserve percentage (default: 10%).
-- Choose whether 100% of loaned money is spent and redeposited.
+An interactive web application that demonstrates the double spend problem in fractional-reserve banking through dynamic visualizations and simulations. This educational tool helps users understand how money creation occurs in the banking system.
 
-**2. Visualization Modes**
-- Toggle between multiple views:
-    - **3D Flow Diagram** – shows money movement with particle effects and animated arrows (deposits → reserves → loans → redeposits).
-    - **Table View** – displays deposits, reserves, loans, and total money at each step.
-    - **Graph View** – plots growth of total money and reserves across cycles.
+## Overview
 
-**3. Metrics & Tracking**
-- Dashboard displaying key values: starting deposit, money created, and total money.
-- Shows the ratio of reserves to total deposits.
-- Interactive graphs with hover-over details for exact values.
+The Double Spend Problem Simulator illustrates how fractional-reserve banking can lead to money creation, effectively allowing the same money to be "spent twice" through the banking system. Users can experiment with different parameters and observe the effects through various visualizations.
 
-**4. Comparison & Analysis**
-- Side-by-side simulation mode to compare scenarios with different reserve ratios (e.g., 10% vs 20%).
-- Optional inflation impact overlay to estimate how money supply growth might correlate with inflation.
+## Features
 
-**5. Educational Features**
-- “Education Mode” with hover tooltips defining key terms (e.g., *reserve = portion banks must hold back*) and context boxes explaining “*Why this matters.*”
+### 1. Interactive Simulation
+- **Customizable Parameters**
+  - Set initial deposit amount
+  - Adjust reserve ratio (default: 10%)
+  - Control simulation speed
+  - Step-by-step or continuous playback
 
-**6. Controls & Interactivity**
-- Simulation speed control with play/pause and step-through timeline navigation.
-- Use of distinct colors to differentiate deposits, reserves, and loans.
+### 2. Multiple Visualization Modes
+- **Flow Diagram View**
+  - Animated visualization of money movement
+  - Visual tracking of deposits, reserves, and loans
+  - Clear arrows showing money flow direction
+- **Table View**
+  - Detailed numerical breakdown of each cycle
+  - Track deposits, reserves, loans, and total money
+- **Graph View**
+  - Plot money supply growth over time
+  - Interactive data points with precise values
+  - Visual comparison of different metrics
+
+### 3. Educational Tools
+- **Education Mode**
+  - Contextual tooltips explaining key terms
+  - "Why This Matters" explanations
+  - Visual cues for important concepts
+- **Side-by-Side Comparison**
+  - Compare different reserve ratios
+  - Analyze impact on money creation
+  - Synchronized simulation controls
+
+### 4. Real-Time Analytics
+- **Key Metrics Dashboard**
+  - Starting deposit tracking
+  - Total money creation calculation
+  - Current reserve ratio display
+  - System-wide money supply monitoring
+
+## Technology Stack
+- HTML5, CSS3, JavaScript (ES6+)
+- D3.js for dynamic visualizations
+- Chart.js for graphing
+- Jest and Testing Library for testing
+
+## Getting Started
+
+1. Clone the repository
+```bash
+git clone https://github.com/DochertyDev/Double-Spend-Problem-Simulator.git
+```
+
+2. Install dependencies
+```bash
+npm install
+```
+
+3. Run tests (note the tests may fail but step 4. should still work)
+```bash
+npm test
+```
+
+4. Open `index.html` in your browser to start the simulation
+
+## Development
+
+This project follows Test-Driven Development (TDD) principles and maintains high code quality standards. All features are thoroughly tested and documented.
+
+### Project Structure
+```
+src/
+├── components/    # UI components
+├── services/     # Core simulation logic
+├── styles/       # CSS styling
+└── index.html    # Main entry point
+
+tests/
+├── integration/  # Integration tests
+└── unit/        # Unit tests
+```
+
 
