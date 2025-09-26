@@ -1,4 +1,4 @@
-# Double Spend Problem Simulator 🏦💰
+# Double Spend Problem Simulator ‼️💰
 
 An interactive web application that demonstrates the double spend problem in fractional-reserve banking through dynamic visualizations and simulations. This educational tool helps users understand how money creation occurs in the banking system.
 
