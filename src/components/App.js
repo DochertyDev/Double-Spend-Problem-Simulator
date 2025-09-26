@@ -1,0 +1,118 @@
+import { SimulationState } from '../services/simulation.js';
+import { Controls } from './Controls.js';
+import { Dashboard } from './Dashboard.js';
+import { TableView } from './TableView.js';
+import { GraphView } from './GraphView.js';
+import { FlowDiagram } from './FlowDiagram.js';
+import { EducationMode } from './EducationMode.js';
+
+class App {
+  constructor() {
+    this.state = {
+      simulationState: null,
+      currentView: 'table',
+      educationMode: false
+    };
+
+    this.init();
+  }
+
+  init() {
+    this.container = document.getElementById('app');
+    this.renderInitialLayout();
+    this.attachEventListeners();
+  }
+
+  renderInitialLayout() {
+    this.container.innerHTML = `
+      <div class="app-container">
+        <header>
+          <h1>Double Spend Problem Simulator</h1>
+          <button id="education-toggle">Education Mode</button>
+        </header>
+        <main>
+          <div id="controls"></div>
+          <div id="dashboard"></div>
+          <div id="visualization">
+            <div class="view-controls">
+              <button class="view-button active" data-view="table">Table View</button>
+              <button class="view-button" data-view="graph">Graph View</button>
+            </div>
+            <div class="view-container">
+              <div class="table-view"></div>
+              <div class="graph-view" style="display: none;"></div>
+            </div>
+          </div>
+          <div id="flow-diagram"></div>
+        </main>
+      </div>
+    `;
+
+    // Initialize components
+    this.controls = new Controls(
+      document.getElementById('controls'),
+      this.handleSimulationStart.bind(this)
+    );
+    
+    this.dashboard = new Dashboard(document.getElementById('dashboard'));
+    this.tableView = new TableView(document.querySelector('.table-view'));
+    this.graphView = new GraphView(document.querySelector('.graph-view'));
+    this.flowDiagram = new FlowDiagram(document.getElementById('flow-diagram'));
+    this.educationMode = new EducationMode(this.container);
+  }
+
+  attachEventListeners() {
+    const viewButtons = document.querySelectorAll('.view-button');
+    viewButtons.forEach(button => {
+      button.addEventListener('click', () => this.switchView(button.dataset.view));
+    });
+
+    document.getElementById('education-toggle').addEventListener('click', () => {
+      this.toggleEducationMode();
+    });
+  }
+
+  handleSimulationStart(config) {
+    this.state.simulationState = new SimulationState(config);
+    this.updateUI();
+    this.startSimulation();
+  }
+
+  startSimulation() {
+    const run = () => {
+      if (this.state.simulationState.status === 'running') {
+        this.state.simulationState.processNextCycle();
+        this.updateUI();
+        requestAnimationFrame(run);
+      }
+    };
+    run();
+  }
+
+  updateUI() {
+    this.dashboard.update(this.state.simulationState);
+    this.tableView.update(this.state.simulationState);
+    this.graphView.update(this.state.simulationState);
+    this.flowDiagram.update(this.state.simulationState);
+  }
+
+  switchView(view) {
+    this.state.currentView = view;
+    document.querySelector('.table-view').style.display = view === 'table' ? 'block' : 'none';
+    document.querySelector('.graph-view').style.display = view === 'graph' ? 'block' : 'none';
+    
+    document.querySelectorAll('.view-button').forEach(button => {
+      button.classList.toggle('active', button.dataset.view === view);
+    });
+  }
+
+  toggleEducationMode() {
+    this.state.educationMode = !this.state.educationMode;
+    this.educationMode.toggle(this.state.educationMode);
+  }
+}
+
+// Initialize the app when the DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  new App();
+});
