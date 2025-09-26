@@ -11,43 +11,31 @@ export class GraphView {
         <canvas id="money-supply-chart"></canvas>
       </div>
     `;
+    this.initChart();
   }
 
-  update(simulationState) {
-    if (!simulationState) return;
-
+  initChart() {
     const ctx = document.getElementById('money-supply-chart').getContext('2d');
-    const cycles = simulationState.cycles;
-
-    const labels = cycles.map(cycle => `Cycle ${cycle.cycleNumber}`);
-    const totalMoney = cycles.map(cycle => cycle.totalMoney);
-    const deposits = cycles.map(cycle => cycle.deposits);
-    const loans = cycles.map(cycle => cycle.loans);
-
-    if (this.chart) {
-      this.chart.destroy();
-    }
-
     this.chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: labels,
+        labels: [],
         datasets: [
           {
             label: 'Total Money',
-            data: totalMoney,
+            data: [],
             borderColor: 'rgb(75, 192, 192)',
             tension: 0.1
           },
           {
             label: 'Deposits',
-            data: deposits,
+            data: [],
             borderColor: 'rgb(54, 162, 235)',
             tension: 0.1
           },
           {
             label: 'Loans',
-            data: loans,
+            data: [],
             borderColor: 'rgb(255, 99, 132)',
             tension: 0.1
           }
@@ -76,5 +64,21 @@ export class GraphView {
         }
       }
     });
+  }
+
+  update(simulationState) {
+    if (!simulationState || !this.chart) return;
+
+    const cycles = simulationState.cycles;
+    const labels = cycles.map(cycle => `Cycle ${cycle.cycleNumber}`);
+    const totalMoney = cycles.map(cycle => cycle.totalMoney);
+    const deposits = cycles.map(cycle => cycle.deposits);
+    const loans = cycles.map(cycle => cycle.loans);
+
+    this.chart.data.labels = labels;
+    this.chart.data.datasets[0].data = totalMoney;
+    this.chart.data.datasets[1].data = deposits;
+    this.chart.data.datasets[2].data = loans;
+    this.chart.update();
   }
 }

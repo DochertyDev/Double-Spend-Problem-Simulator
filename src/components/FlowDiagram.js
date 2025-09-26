@@ -5,19 +5,7 @@ export class FlowDiagram {
     this.container = container;
     this.svg = null;
     this.simulation = null;
-    
-    // Only render if we have D3 available (i.e., not in test environment)
-    if (typeof d3 !== 'undefined' && typeof window !== 'undefined') {
-      this.render();
-    } else {
-      // For testing environment, just create a simple placeholder
-      this.container.innerHTML = `
-        <div class="flow-diagram">
-          <h3>Money Flow Diagram</h3>
-          <div id="flow-svg-container" data-testid="flow-diagram"></div>
-        </div>
-      `;
-    }
+    this.render();
   }
 
   render() {
@@ -32,18 +20,14 @@ export class FlowDiagram {
     const width = 600;
     const height = 400;
 
-    try {
-      this.svg = d3.select('#flow-svg-container')
-        .append('svg')
-        .attr('width', width)
-        .attr('height', height)
-        .append('g')
-        .attr('transform', 'translate(50,50)');
-      this.setupStaticElements();
-    } catch (error) {
-      console.warn('D3 initialization failed:', error);
-      this.svg = null;
-    }
+    this.svg = d3.select('#flow-svg-container')
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height)
+      .append('g')
+      .attr('transform', 'translate(50,50)');
+
+    this.setupStaticElements();
   }
 
   setupStaticElements() {
