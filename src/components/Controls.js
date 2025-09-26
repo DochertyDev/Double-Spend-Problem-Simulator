@@ -59,8 +59,10 @@ export class Controls {
     const isValid = !isNaN(deposit) && !isNaN(ratio) && 
                    deposit > 0 && ratio >= 0 && ratio <= 1;
 
-    depositInput.classList.toggle('invalid', isNaN(deposit) || deposit <= 0);
-    ratioInput.classList.toggle('invalid', isNaN(ratio) || ratio < 0 || ratio > 1);
+    const depositGroup = depositInput.parentElement;
+    const ratioGroup = ratioInput.parentElement;
+    depositGroup.classList.toggle('invalid', isNaN(deposit) || deposit <= 0);
+    ratioGroup.classList.toggle('invalid', isNaN(ratio) || ratio < 0 || ratio > 1);
     runButton.disabled = !isValid;
 
     return isValid;

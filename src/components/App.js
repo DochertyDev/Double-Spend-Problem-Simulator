@@ -6,7 +6,7 @@ import { GraphView } from './GraphView.js';
 import { FlowDiagram } from './FlowDiagram.js';
 import { EducationMode } from './EducationMode.js';
 
-class App {
+export class App {
   constructor() {
     this.state = {
       simulationState: null,
@@ -49,16 +49,20 @@ class App {
     `;
 
     // Initialize components
-    this.controls = new Controls(
-      document.getElementById('controls'),
-      this.handleSimulationStart.bind(this)
-    );
-    
-    this.dashboard = new Dashboard(document.getElementById('dashboard'));
-    this.tableView = new TableView(document.querySelector('.table-view'));
-    this.graphView = new GraphView(document.querySelector('.graph-view'));
-    this.flowDiagram = new FlowDiagram(document.getElementById('flow-diagram'));
-    this.educationMode = new EducationMode(this.container);
+    const controlsEl = document.getElementById('controls');
+    const dashboardEl = document.getElementById('dashboard');
+    const tableViewEl = document.querySelector('.table-view');
+    const graphViewEl = document.querySelector('.graph-view');
+    const flowDiagramEl = document.getElementById('flow-diagram');
+
+    if (controlsEl && dashboardEl && tableViewEl && graphViewEl && flowDiagramEl) {
+      this.controls = new Controls(controlsEl, this.handleSimulationStart.bind(this));
+      this.dashboard = new Dashboard(dashboardEl);
+      this.tableView = new TableView(tableViewEl);
+      this.graphView = new GraphView(graphViewEl);
+      this.flowDiagram = new FlowDiagram(flowDiagramEl);
+      this.educationMode = new EducationMode(this.container);
+    }
   }
 
   attachEventListeners() {

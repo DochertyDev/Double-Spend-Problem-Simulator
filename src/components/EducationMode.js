@@ -1,6 +1,10 @@
 export class EducationMode {
   constructor(container) {
     this.container = container;
+    this.tooltipElement = document.createElement('div');
+    this.tooltipElement.className = 'tooltip';
+    this.tooltipElement.style.display = 'none';
+    document.body.appendChild(this.tooltipElement);
     this.tooltips = {
       'Reserves': 'The portion of deposits that a bank must hold in cash and not lend out.',
       'Initial Deposit': 'The starting amount of money in the banking system.',
@@ -44,8 +48,7 @@ export class EducationMode {
 
   removeTooltips() {
     if (this.tooltipElement) {
-      this.tooltipElement.remove();
-      this.tooltipElement = null;
+      this.tooltipElement.style.display = 'none';
     }
 
     // Remove event listeners and classes

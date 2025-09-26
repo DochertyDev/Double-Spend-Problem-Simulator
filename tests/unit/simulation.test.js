@@ -84,9 +84,9 @@ describe('SimulationState', () => {
       reserveRatio: 0.9
     });
 
-    while (simulation.status === 'running') {
-      simulation.processNextCycle();
-    }
+    simulation.runFullSimulation();
+
+    expect(simulation.cycles.length).toBeGreaterThan(0);
 
     const lastCycle = simulation.cycles[simulation.cycles.length - 1];
     expect(lastCycle.loans).toBeLessThanOrEqual(0.01);

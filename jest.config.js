@@ -1,19 +1,13 @@
 module.exports = {
   testEnvironment: 'jsdom',
-  moduleDirectories: ['node_modules', 'src'],
-  setupFilesAfterEnv: ['@testing-library/jest-dom'],
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
+  moduleNameMapper: {
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+  },
   transform: {
-    '^.+\\.jsx?$': 'babel-jest'
+    '^.+\\.(js|jsx)$': 'babel-jest',
   },
   moduleFileExtensions: ['js', 'jsx'],
-  testMatch: [
-    "**/tests/**/*.test.js"
-  ],
-  collectCoverage: true,
-  coverageDirectory: "coverage",
-  coverageReporters: ["text", "lcov"],
-  collectCoverageFrom: [
-    "src/**/*.{js,jsx}",
-    "!src/index.js"
-  ]
+  testPathIgnorePatterns: ['/node_modules/'],
+  setupFiles: ['jest-canvas-mock']
 };
