@@ -1,7 +1,9 @@
 export class Controls {
-  constructor(container, onSimulationStart) {
+  constructor(container, { onSimulationStart, onPause, onStep }) {
     this.container = container;
     this.onSimulationStart = onSimulationStart;
+    this.onPause = onPause;
+    this.onStep = onStep;
     this.render();
   }
 
@@ -31,14 +33,19 @@ export class Controls {
     const runButton = this.container.querySelector('#run-simulation');
     const pauseButton = this.container.querySelector('#pause-simulation');
     const stepButton = this.container.querySelector('#step-simulation');
+    const depositInput = this.container.querySelector('#initial-deposit');
+    const ratioInput = this.container.querySelector('#reserve-ratio');
 
-    this.validateInputs();
+    const updateButtons = () => this.validateInputs();
+
+    depositInput.addEventListener('input', updateButtons);
+    ratioInput.addEventListener('input', updateButtons);
 
     runButton.addEventListener('click', () => {
       if (this.validateInputs()) {
         const config = {
-          initialDeposit: parseFloat(this.container.querySelector('#initial-deposit').value),
-          reserveRatio: parseFloat(this.container.querySelector('#reserve-ratio').value)
+          initialDeposit: parseFloat(depositInput.value),
+          reserveRatio: parseFloat(ratioInput.value)
         };
         this.onSimulationStart(config);
         runButton.disabled = true;
@@ -46,6 +53,16 @@ export class Controls {
         stepButton.disabled = false;
       }
     });
+
+    pauseButton.addEventListener('click', () => {
+      if (this.onPause) this.onPause();
+    });
+
+    stepButton.addEventListener('click', () => {
+      if (this.onStep) this.onStep();
+    });
+
+    this.validateInputs();
   }
 
   validateInputs() {

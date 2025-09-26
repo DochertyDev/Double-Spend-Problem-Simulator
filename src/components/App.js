@@ -56,7 +56,11 @@ export class App {
     const flowDiagramEl = document.getElementById('flow-diagram');
 
     if (controlsEl && dashboardEl && tableViewEl && graphViewEl && flowDiagramEl) {
-      this.controls = new Controls(controlsEl, this.handleSimulationStart.bind(this));
+      this.controls = new Controls(controlsEl, {
+        onSimulationStart: (config) => this.handleSimulationStart(config),
+        onPause: () => this.pauseSimulation(),
+        onStep: () => this.stepSimulation(),
+      });
       this.dashboard = new Dashboard(dashboardEl);
       this.tableView = new TableView(tableViewEl);
       this.graphView = new GraphView(graphViewEl);
@@ -78,19 +82,37 @@ export class App {
 
   handleSimulationStart(config) {
     this.state.simulationState = new SimulationState(config);
-    this.updateUI();
+    this.state.simulationState.status = 'running'; // Set status to running
     this.startSimulation();
   }
 
   startSimulation() {
-    const run = () => {
-      if (this.state.simulationState.status === 'running') {
-        this.state.simulationState.processNextCycle();
-        this.updateUI();
-        requestAnimationFrame(run);
-      }
-    };
-    run();
+    if (this.state.simulationState.status !== 'running') return;
+
+    this.state.simulationState.processNextCycle();
+    this.updateUI();
+
+    this.animationFrameId = requestAnimationFrame(() => this.startSimulation());
+
+    if (this.state.simulationState.status === 'finished') {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+  }
+
+  pauseSimulation() {
+    this.state.simulationState.status = 'paused';
+    cancelAnimationFrame(this.animationFrameId);
+  }
+
+  resumeSimulation() {
+    this.state.simulationState.status = 'running';
+    this.startSimulation();
+  }
+
+  stepSimulation() {
+    if (this.state.simulationState.status === 'finished') return;
+    this.state.simulationState.processNextCycle();
+    this.updateUI();
   }
 
   updateUI() {
