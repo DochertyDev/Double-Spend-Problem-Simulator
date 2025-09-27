@@ -46,56 +46,70 @@ The Double Spend Problem Simulator illustrates how fractional-reserve banking ca
   - 🌐 System-wide money supply monitoring
 
 ## 💻 Technology Stack
-- HTML5, CSS3, JavaScript (ES6+)
-- Vite for development and bundling
-- D3.js for dynamic visualizations
-- Chart.js for graphing
-- Jest and Testing Library for testing
+- **Frontend:** HTML5, CSS3, JavaScript (ES6+)
+- **Development Server:** Vite
+- **Visualizations:** D3.js, Chart.js
+- **Testing:** Jest, Testing Library
 
 ## 🚀 Getting Started
 
-1.  **Clone the repository**
+### Prerequisites
+- Node.js (v14 or higher)
+- npm
+
+### Installation
+1.  **Clone the repository:**
     ```bash
     git clone https://github.com/DochertyDev/Double-Spend-Problem-Simulator.git
     ```
 
-2.  **Navigate to the project directory**
+2.  **Navigate to the project directory:**
     ```bash
     cd Double-Spend-Problem-Simulator
     ```
 
-3.  **Install dependencies**
+3.  **Install dependencies:**
     ```bash
     npm install
     ```
 
-4.  **Run the development server**
+### Running the Application
+1.  **Start the development server:**
     ```bash
     npm run dev
     ```
 
-5.  **Open the application**
-    Open the URL provided by Vite (usually `http://localhost:5173`) in your browser to start the simulation.
+2.  **Open in your browser:**
+    Open the URL provided by Vite (usually `http://localhost:5173`) to start the simulation.
 
 ## 🧪 Running Tests
 
-To run the test suite:
+To run the test suite, use the following command:
 ```bash
 npm test
+```
+You can also run tests in watch mode:
+```bash
+npm run test:watch
 ```
 
 ## 🛠️ Development
 
-This project follows Test-Driven Development (TDD) principles and maintains high code quality standards. All features are thoroughly tested and documented.
+This project follows Test-Driven Development (TDD) principles. All new features should be accompanied by corresponding tests.
 
 ### 📂 Project Structure
 ```
 .
 ├── index.html        # Main HTML entry point
-├── package.json
-└── src/
-    ├── main.js       # Application entry script
-    ├── components/   # UI components (App, Controls, etc.)
-    ├── services/     # Core simulation logic
-    └── styles/       # CSS styling
+├── package.json      # Project metadata and dependencies
+├── jest.config.js    # Jest test runner configuration
+├── .babelrc          # Babel configuration for Jest
+├── src/
+│   ├── main.js       # Application entry script
+│   ├── components/   # UI components
+│   ├── services/     # Core simulation logic
+│   └── styles/       # CSS styling
+└── tests/
+    ├── unit/         # Unit tests
+    └── integration/  # Integration tests
 ```
