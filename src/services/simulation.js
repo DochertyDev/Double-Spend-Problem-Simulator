@@ -22,7 +22,7 @@ export class SimulationCycle {
     }
 
     this.reserves = this.deposits * this.reserveRatio;
-    this.loans = this.deposits - this.reserves;
+    this.loans = Math.max(0, this.deposits - this.reserves);
   }
 }
 
