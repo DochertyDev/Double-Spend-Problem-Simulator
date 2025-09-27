@@ -4,139 +4,236 @@ export class FlowDiagram {
   constructor(container) {
     this.container = container;
     this.svg = null;
-    this.simulation = null;
     this.render();
   }
 
   render() {
     this.container.innerHTML = `
-      <div class="flow-diagram">
+      <div class="flow-diagram" style="overflow-x:auto;">
         <h3>Money Flow Diagram</h3>
-        <div id="flow-svg-container" data-testid="flow-diagram"></div>
+        <div id="flow-legend" style="float:left; margin-right:20px;"></div>
+        <div id="flow-svg-container" data-testid="flow-diagram" style="min-width:900px;"></div>
       </div>
     `;
 
-    // Set up the SVG
-    const width = 600;
-    const height = 400;
+    // Legend
+    this.renderLegend();
 
+    // Set up the SVG
+    this.svgWidth = 1800; // Will be updated dynamically in update()
+    this.svgHeight = 650;
     this.svg = d3.select('#flow-svg-container')
       .append('svg')
-      .attr('width', width)
-      .attr('height', height)
-      .append('g')
-      .attr('transform', 'translate(50,50)');
+      .attr('width', this.svgWidth)
+      .attr('height', this.svgHeight);
 
-    this.setupStaticElements();
-  }
-
-  setupStaticElements() {
-    if (!this.svg) return;
-    
-    // Define arrow marker
+    // Arrow marker
     this.svg.append('defs').append('marker')
       .attr('id', 'arrowhead')
-      .attr('viewBox', '-0 -5 10 10')
-      .attr('refX', 8)
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 18)
       .attr('refY', 0)
       .attr('orient', 'auto')
       .attr('markerWidth', 8)
       .attr('markerHeight', 8)
       .append('path')
       .attr('d', 'M0,-5L10,0L0,5')
-      .attr('class', 'arrowhead');
+      .attr('fill', '#333');
+  }
 
-    // Add static nodes
-    const nodes = [
-      { id: 'deposits', label: 'Deposits', x: 100, y: 100 },
-      { id: 'reserves', label: 'Reserves', x: 300, y: 50 },
-      { id: 'loans', label: 'Loans', x: 300, y: 150 }
-    ];
-
-    // Add node circles
-    this.svg.selectAll('.node')
-      .data(nodes)
-      .enter()
-      .append('circle')
-      .attr('class', 'node')
-      .attr('cx', d => d.x)
-      .attr('cy', d => d.y)
-      .attr('r', 30)
-      .style('fill', '#fff')
-      .style('stroke', '#333');
-
-    // Add node labels
-    this.svg.selectAll('.label')
-      .data(nodes)
-      .enter()
-      .append('text')
-      .attr('class', 'label')
-      .attr('x', d => d.x)
-      .attr('y', d => d.y)
-      .attr('text-anchor', 'middle')
-      .attr('dominant-baseline', 'middle')
-      .text(d => d.label);
+  renderLegend() {
+    const legend = document.getElementById('flow-legend');
+    legend.innerHTML = `
+      <div style="border:1px solid #ccc; border-radius:16px; padding:12px; width:120px; background:#fff; margin-bottom:10px;">
+        <strong>Legend</strong><br><br>
+        <div style="margin-bottom:8px;"><span style="display:inline-block;width:24px;height:24px;background:#aaffaa;border-radius:50%;border:2px solid #333;vertical-align:middle;"></span> Earner & Depositor</div>
+        <div style="margin-bottom:8px;"><span style="display:inline-block;width:24px;height:24px;background:#ccc;border-radius:12px;border:2px solid #333;vertical-align:middle;"></span> Bank</div>
+        <div style="margin-bottom:8px;"><span style="display:inline-block;width:24px;height:24px;background:#ffaaaa;border-radius:50%;border:2px solid #333;vertical-align:middle;"></span> Borrower</div>
+        <div style="margin-bottom:8px;"><span style="display:inline-block;width:24px;height:24px;background:#ffdd99;border-radius:8px;border:2px solid #333;vertical-align:middle;"></span> Reserves</div>
+      </div>
+    `;
   }
 
   update(simulationState) {
-    if (!simulationState || simulationState.cycles.length === 0) return;
+    if (!simulationState || !simulationState.cycles || simulationState.cycles.length === 0) return;
 
-    const currentCycle = simulationState.cycles[simulationState.cycles.length - 1];
-    const totalDeposits = currentCycle.deposits;
-    const reserves = currentCycle.reserves;
-    const loans = currentCycle.loans;
+    // Clear previous diagram
+    this.svg.selectAll('*:not(defs)').remove();
 
-    // Update flow lines with animations
-    this.updateFlowLines(totalDeposits, reserves, loans);
+    // Layout constants
+    const cycleWidth = 600; // Width of a single cycle group
+    const cycleSpacing = 700; // Horizontal spacing between cycles
+    const nodeRadius = 32;
+    const nodeY = 220;
+    const verticalOffset = 160; // Vertical zig-zag offset for even cycles
+    const reserveYOffset = 140;
+    const labelYOffset = 85; // Increased padding for labels
+
+    // Responsive scaling
+    const totalCycles = simulationState.cycles.length;
+    const minWidth = Math.max(900, 60 + totalCycles * cycleSpacing);
+    this.svg.attr('width', minWidth);
+    this.svg.attr('height', this.svgHeight + (totalCycles > 1 ? verticalOffset : 0)); // Adjust height for zig-zag
+    const svgContainer = document.getElementById('flow-svg-container');
+    svgContainer.style.minWidth = `${minWidth}px`;
+
+    // Render cycles
+    simulationState.cycles.forEach((cycle, i) => {
+      const xBase = 60 + i * cycleSpacing;
+      const yBase = nodeY + (i % 2 === 0 ? 0 : verticalOffset); // Apply vertical offset for even cycles
+      const reserveY = yBase + reserveYOffset;
+
+      // 1. Cycle Grouping
+      this.drawCycleContainer(xBase - 40, yBase - 70, cycleWidth, 300, i + 1);
+
+      // Node positions
+      const depositorX = xBase;
+      const bankX = xBase + 220;
+      const borrowerX = xBase + 440;
+
+      // 2. Arrows with improved paths
+      // Deposit arrow (curved upwards)
+      this.drawCurvedArrow(depositorX, yBase, bankX, yBase, -70);
+      this.drawPillLabel((depositorX + bankX) / 2, yBase - labelYOffset, `$${cycle.deposits.toFixed(2)} Deposit`, '#fff', '#2e7d32');
+
+      // Reserve arrow (straight)
+      this.drawArrow(bankX, yBase, bankX, reserveY);
+      this.drawPillLabel(bankX, (yBase + reserveY) / 2, `$${cycle.reserves.toFixed(2)} Reserve`, '#fff', '#f9a825');
+
+      // Loan arrow (curved upwards)
+      this.drawCurvedArrow(bankX, yBase, borrowerX, yBase, -70);
+      this.drawPillLabel((bankX + borrowerX) / 2, yBase - labelYOffset, `$${cycle.loans.toFixed(2)} Loan`, '#fff', '#c62828');
+
+      // Spend arrow (to next depositor, curved downwards)
+      if (i < totalCycles - 1) {
+        const nextXBase = 60 + (i + 1) * cycleSpacing;
+        const nextYBase = nodeY + ((i + 1) % 2 === 0 ? 0 : verticalOffset);
+        this.drawCurvedArrow(borrowerX, yBase, nextXBase, nextYBase, 120, true); // Increased curve offset
+        this.drawPillLabel((borrowerX + nextXBase) / 2, (yBase + nextYBase) / 2 + 70, `$${cycle.loans.toFixed(2)} Spend`, '#fff', '#1976d2');
+      }
+
+      // 3. Nodes (drawn last to be on top of arrows)
+      this.drawNode(depositorX, yBase, nodeRadius, '#aaffaa', 'Depositor');
+      this.drawNode(bankX, yBase, nodeRadius, '#ccc', 'Bank');
+      this.drawNode(borrowerX, yBase, nodeRadius, '#ffaaaa', 'Borrower');
+      this.drawNode(bankX, reserveY, nodeRadius, '#ffdd99', 'Reserves', 8);
+
+      // Remove the dotted repeat cycle arrow as it's distracting
+    });
   }
 
-  updateFlowLines(deposits, reserves, loans) {
-    // Calculate line paths
-    const paths = [
-      {
-        id: 'deposits-reserves',
-        d: 'M100,100 C200,75 200,75 300,50',
-        value: reserves
-      },
-      {
-        id: 'deposits-loans',
-        d: 'M100,100 C200,125 200,125 300,150',
-        value: loans
-      }
-    ];
+  drawCycleContainer(x, y, width, height, cycleNumber) {
+    // Background container
+    this.svg.append('rect')
+      .attr('x', x)
+      .attr('y', y)
+      .attr('width', width)
+      .attr('height', height + 40)
+      .attr('rx', 15)
+      .attr('fill', '#f9f9f9')
+      .attr('stroke', '#e0e0e0');
 
-    // Update or create flow lines
-    paths.forEach(path => {
-      const line = this.svg.selectAll(`#${path.id}`).data([path]);
+    // Cycle number label
+    this.svg.append('text')
+      .attr('x', x + width / 2)
+      .attr('y', y + 20)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', 16)
+      .attr('font-weight', 'bold')
+      .attr('fill', '#555')
+      .text(`Cycle ${cycleNumber}`);
+  }
 
-      // Enter
-      line.enter()
-        .append('path')
-        .attr('id', path.id)
-        .attr('class', 'flow-line')
-        .attr('marker-end', 'url(#arrowhead)')
-        .attr('d', d => d.d)
-        .style('stroke', '#333')
-        .style('fill', 'none');
+  drawNode(x, y, r, color, label, borderRadius = 38) {
+    // Draw node shape
+    if (borderRadius === 38) {
+      this.svg.append('circle')
+        .attr('cx', x)
+        .attr('cy', y)
+        .attr('r', r)
+        .attr('fill', color)
+        .attr('stroke', '#333')
+        .attr('stroke-width', 2);
+    } else {
+      this.svg.append('rect')
+        .attr('x', x - r)
+        .attr('y', y - r / 2)
+        .attr('width', r * 2)
+        .attr('height', r)
+        .attr('rx', borderRadius)
+        .attr('fill', color)
+        .attr('stroke', '#333')
+        .attr('stroke-width', 2);
+    }
+    // Short label on node
+    this.svg.append('text')
+      .attr('x', x)
+      .attr('y', y)
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'central')
+      .attr('font-size', 15)
+      .attr('fill', '#333')
+      .text(label);
+  }
 
-      // Update
-      line
-        .transition()
-        .duration(500)
-        .style('stroke-width', d => Math.log(d.value + 1) * 2);
+  drawArrow(x1, y1, x2, y2, dotted = false) {
+    this.svg.append('line')
+      .attr('x1', x1)
+      .attr('y1', y1)
+      .attr('x2', x2)
+      .attr('y2', y2)
+      .attr('stroke', '#333')
+      .attr('stroke-width', 2)
+      .attr('marker-end', 'url(#arrowhead)')
+      .attr('stroke-dasharray', dotted ? '6,6' : null);
+  }
 
-      // Add or update value labels
-      const label = this.svg.selectAll(`#${path.id}-label`).data([path]);
+  // Curved arrow for horizontal connections
+  drawCurvedArrow(x1, y1, x2, y2, curveOffset = -30, dotted = false) {
+    const midX = (x1 + x2) / 2;
+    const midY = (y1 + y2) / 2;
+    const curveY = midY + curveOffset; // Positive for downward, negative for upward
 
-      label.enter()
-        .append('text')
-        .attr('id', `${path.id}-label`)
-        .attr('class', 'flow-label')
-        .attr('text-anchor', 'middle')
-        .merge(label)
-        .attr('x', path.id.includes('reserves') ? 200 : 200)
-        .attr('y', path.id.includes('reserves') ? 60 : 140)
-        .text(`$${path.value.toFixed(2)}`);
-    });
+    this.svg.append('path')
+      .attr('d', `M${x1},${y1} Q${midX},${curveY} ${x2},${y2}`)
+      .attr('stroke', '#333')
+      .attr('stroke-width', 2)
+      .attr('fill', 'none')
+      .attr('marker-end', 'url(#arrowhead)')
+      .attr('stroke-dasharray', dotted ? '6,6' : null);
+  }
+
+  drawLabel(x, y, text, color = '#333', fontSize = 13, italic = false) {
+    this.svg.append('text')
+      .attr('x', x)
+      .attr('y', y)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', fontSize)
+      .attr('fill', color)
+      .attr('font-style', italic ? 'italic' : 'normal')
+      .text(text);
+  }
+
+  drawPillLabel(x, y, text, color, backgroundColor) {
+    const group = this.svg.append('g')
+      .attr('transform', `translate(${x}, ${y})`);
+
+    const textElement = group.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'central')
+      .attr('font-size', 12)
+      .attr('fill', color)
+      .text(text);
+
+    const bbox = textElement.node().getBBox();
+    const padding = { x: 8, y: 4 };
+
+    group.insert('rect', 'text')
+      .attr('x', bbox.x - padding.x)
+      .attr('y', bbox.y - padding.y)
+      .attr('width', bbox.width + 2 * padding.x)
+      .attr('height', bbox.height + 2 * padding.y)
+      .attr('rx', (bbox.height + 2 * padding.y) / 2)
+      .attr('fill', backgroundColor);
   }
 }
