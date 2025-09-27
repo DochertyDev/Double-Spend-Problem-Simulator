@@ -40,9 +40,9 @@ The production files will be placed in the `dist` directory.
 
 ## Testing
 
-NOTE: Do not test unless asked to or you deem it absolutely necessary.
+NOTE: Do not test unless asked to. I will do the testing.
 
-To run the test suite, use the following command:
+IF YOU ARE ASKED TO RUN TESTS, to run the test suite, use the following command:
 
 ```bash
 npm test
@@ -63,3 +63,7 @@ npm run test:watch
 *   The UI components are located in the `src/components` directory.
 *   The styles are in the `src/styles` directory.
 *   The tests are in the `tests` directory, with separate subdirectories for unit and integration tests.
+
+## Additional Instructions
+
+- If any big features changes are made to the project, update the README.md file to reflect the most up-to-date version of the web app

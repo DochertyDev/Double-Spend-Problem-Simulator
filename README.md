@@ -33,10 +33,6 @@ The Double Spend Problem Simulator illustrates how fractional-reserve banking ca
   - ❓ Contextual tooltips explaining key terms
   - 💡 "Why This Matters" explanations
   - 🎨 Visual cues for important concepts
-- **Side-by-Side Comparison**
-  - ⚖️ Compare different reserve ratios
-  - 🧐 Analyze impact on money creation
-  - ⚙️ Synchronized simulation controls
 
 ### 📈 4. Real-Time Analytics
 - **Key Metrics Dashboard**

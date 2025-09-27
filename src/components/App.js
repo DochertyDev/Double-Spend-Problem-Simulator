@@ -143,9 +143,26 @@ export class App {
 
   switchView(view) {
     this.state.currentView = view;
-    document.querySelector('.table-view').style.display = view === 'table' ? 'block' : 'none';
-    document.querySelector('.graph-view').style.display = view === 'graph' ? 'block' : 'none';
-    document.getElementById('flow-diagram').style.display = view === 'flow' ? 'block' : 'none';
+    const tableViewEl = document.querySelector('.table-view');
+    const graphViewEl = document.querySelector('.graph-view');
+    const flowDiagramEl = document.getElementById('flow-diagram');
+
+    tableViewEl.style.display = view === 'table' ? 'block' : 'none';
+    graphViewEl.style.display = view === 'graph' ? 'block' : 'none';
+    flowDiagramEl.style.display = view === 'flow' ? 'block' : 'none';
+
+    // Dynamically adjust table-view height to match graph-view height
+    if (view === 'table' || view === 'graph') {
+      // Ensure graphViewEl is visible to get its computed height
+      const originalGraphViewDisplay = graphViewEl.style.display;
+      graphViewEl.style.display = 'block';
+      const graphViewHeight = graphViewEl.offsetHeight;
+      graphViewEl.style.display = originalGraphViewDisplay; // Restore original display
+
+      tableViewEl.style.height = `${graphViewHeight}px`;
+    } else {
+      tableViewEl.style.height = ''; // Reset height if not in table or graph view
+    }
 
     document.querySelectorAll('.view-button').forEach(button => {
       button.classList.toggle('active', button.dataset.view === view);
