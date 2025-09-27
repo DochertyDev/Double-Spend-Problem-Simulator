@@ -19,8 +19,8 @@ export class Controls {
           <input type="number" id="reserve-ratio" min="0" max="1" step="0.1" value="0.1">
         </div>
         <div class="input-group">
-          <label for="simulation-speed">Simulation Speed: <span id="speed-label">5 tps</span></label>
-          <input type="range" id="simulation-speed" min="1" max="20" value="5">
+          <label for="simulation-speed">Simulation Speed: <span id="speed-label">20 tps</span></label>
+          <input type="range" id="simulation-speed" min="1" max="40" value="20">
         </div>
         <div class="simulation-controls">
           <button id="run-simulation">Run Simulation</button>
@@ -103,8 +103,20 @@ export class Controls {
     this.container.querySelector('#step-simulation').disabled = true;
   }
 
+  showRerunButton() {
+    const runButton = this.container.querySelector('#run-simulation');
+    runButton.textContent = 'Rerun';
+    runButton.disabled = false;
+  }
+
+  hideRerunButton() {
+    const runButton = this.container.querySelector('#run-simulation');
+    runButton.textContent = 'Run Simulation';
+    runButton.disabled = true;
+  }
+
   setPauseButtonState(isPaused) {
     const pauseButton = this.container.querySelector('#pause-simulation');
-    pauseButton.textContent = isPaused ? 'Unpause' : 'Pause';
+    pauseButton.textContent = isPaused ? 'Play' : 'Pause';
   }
 }

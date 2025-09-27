@@ -86,6 +86,7 @@ export class App {
     this.state.simulationState = new SimulationState(config);
     this.state.simulationState.status = 'running'; // Set status to running
     this.state.simulationSpeed = config.simulationSpeed;
+    this.controls.setPauseButtonState(false); // Reset pause button
     this.startSimulation();
   }
 
@@ -117,12 +118,14 @@ export class App {
     this.state.simulationState.status = 'paused';
     clearTimeout(this.animationFrameId);
     this.controls.setPauseButtonState(true);
+    this.controls.showRerunButton();
   }
 
   unpauseSimulation() {
     this.state.simulationState.status = 'running';
     this.startSimulation();
     this.controls.setPauseButtonState(false);
+    this.controls.hideRerunButton();
   }
 
   stepSimulation() {

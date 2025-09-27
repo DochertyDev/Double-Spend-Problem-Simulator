@@ -124,6 +124,15 @@ export class FlowDiagram {
 
       // Remove the dotted repeat cycle arrow as it's distracting
     });
+
+    // Scroll to the latest cycle
+    if (totalCycles > 1) {
+      const container = this.container.querySelector('.flow-diagram');
+      container.scroll({
+        left: container.scrollWidth,
+        behavior: 'smooth'
+      });
+    }
   }
 
   drawCycleContainer(x, y, width, height, cycleNumber) {
