@@ -21,7 +21,7 @@ export class FlowDiagram {
 
     // Set up the SVG
     this.svgWidth = 1800; // Will be updated dynamically in update()
-    this.svgHeight = 650;
+    this.svgHeight = 700;
     this.svg = d3.select('#flow-svg-container')
       .append('svg')
       .attr('width', this.svgWidth)
@@ -62,7 +62,7 @@ export class FlowDiagram {
 
     // Layout constants
     const cycleWidth = 600; // Width of a single cycle group
-    const cycleSpacing = 700; // Horizontal spacing between cycles
+    const cycleSpacing = 800; // Horizontal spacing between cycles
     const nodeRadius = 32;
     const nodeY = 220;
     const verticalOffset = 160; // Vertical zig-zag offset for even cycles
@@ -71,7 +71,7 @@ export class FlowDiagram {
 
     // Responsive scaling
     const totalCycles = simulationState.cycles.length;
-    const minWidth = Math.max(900, 60 + totalCycles * cycleSpacing);
+    const minWidth = Math.max(900, 100 + totalCycles * cycleSpacing);
     this.svg.attr('width', minWidth);
     this.svg.attr('height', this.svgHeight + (totalCycles > 1 ? verticalOffset : 0)); // Adjust height for zig-zag
     const svgContainer = document.getElementById('flow-svg-container');
@@ -79,7 +79,7 @@ export class FlowDiagram {
 
     // Render cycles
     simulationState.cycles.forEach((cycle, i) => {
-      const xBase = 60 + i * cycleSpacing;
+      const xBase = 100 + i * cycleSpacing;
       const yBase = nodeY + (i % 2 === 0 ? 0 : verticalOffset); // Apply vertical offset for even cycles
       const reserveY = yBase + reserveYOffset;
 
@@ -226,7 +226,7 @@ export class FlowDiagram {
       .text(text);
 
     const bbox = textElement.node().getBBox();
-    const padding = { x: 8, y: 4 };
+    const padding = { x: 12, y: 6 };
 
     group.insert('rect', 'text')
       .attr('x', bbox.x - padding.x)

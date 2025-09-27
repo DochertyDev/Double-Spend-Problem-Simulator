@@ -38,13 +38,14 @@ export class App {
             <div class="view-controls">
               <button class="view-button active" data-view="table">Table View</button>
               <button class="view-button" data-view="graph">Graph View</button>
+              <button class="view-button" data-view="flow">Flow Diagram</button>
             </div>
             <div class="view-container">
               <div class="table-view"></div>
               <div class="graph-view" style="display: none;"></div>
+              <div id="flow-diagram" style="display: none;"></div>
             </div>
           </div>
-          <div id="flow-diagram"></div>
         </main>
       </div>
     `;
@@ -141,10 +142,16 @@ export class App {
     this.state.currentView = view;
     document.querySelector('.table-view').style.display = view === 'table' ? 'block' : 'none';
     document.querySelector('.graph-view').style.display = view === 'graph' ? 'block' : 'none';
-    
+    document.getElementById('flow-diagram').style.display = view === 'flow' ? 'block' : 'none';
+
     document.querySelectorAll('.view-button').forEach(button => {
       button.classList.toggle('active', button.dataset.view === view);
     });
+
+    // If switching to the flow view, force a redraw to ensure correct initial rendering
+    if (view === 'flow' && this.state.simulationState) {
+      this.flowDiagram.update(this.state.simulationState);
+    }
   }
 
   toggleEducationMode() {
