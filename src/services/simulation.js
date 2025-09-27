@@ -1,4 +1,33 @@
 /**
+ * The minimum viable reserve amount (one cent).
+ */
+const MIN_RESERVE_AMOUNT = 0.01;
+
+/**
+ * Validates if a given deposit amount can meet the reserve requirements.
+ * @param {number} depositAmount - The amount of the deposit.
+ * @param {number} reserveRatio - The reserve ratio (0-1).
+ * @returns {{isValid: boolean, calculatedReserve: number, minimumDepositRequired: number}}
+ */
+export function validateReserveConstraints(depositAmount, reserveRatio) {
+  if (reserveRatio <= 0) {
+    return {
+      isValid: true,
+      calculatedReserve: 0,
+      minimumDepositRequired: 0,
+    };
+  }
+  const calculatedReserve = depositAmount * reserveRatio;
+  const minimumDepositRequired = MIN_RESERVE_AMOUNT / reserveRatio;
+  return {
+    isValid: calculatedReserve >= MIN_RESERVE_AMOUNT,
+    calculatedReserve,
+    minimumDepositRequired,
+  };
+}
+
+
+/**
  * Represents a single step in the simulation, containing the state of the system at that point.
  */
 export class SimulationCycle {
@@ -13,16 +42,25 @@ export class SimulationCycle {
     this.cycleNumber = cycleNumber;
     this.reserveRatio = reserveRatio;
 
+    const deposit = cycleNumber === 1 ? initialDeposit : previousCycle.loans;
+    const validation = validateReserveConstraints(deposit, reserveRatio);
+    
+    this.isValid = validation.isValid;
+    this.deposits = deposit;
+
     if (cycleNumber === 1) {
-      this.deposits = initialDeposit;
-      this.totalMoney = initialDeposit;
+      this.totalMoney = deposit;
     } else {
-      this.deposits = previousCycle.loans;
       this.totalMoney = previousCycle.totalMoney + this.deposits;
     }
 
-    this.reserves = this.deposits * this.reserveRatio;
-    this.loans = Math.max(0, this.deposits - this.reserves);
+    if (this.isValid) {
+      this.reserves = this.deposits * this.reserveRatio;
+      this.loans = Math.max(0, this.deposits - this.reserves);
+    } else {
+      this.reserves = 0;
+      this.loans = 0;
+    }
   }
 }
 
@@ -40,18 +78,34 @@ export class SimulationState {
     this.config = config;
     this.cycles = [];
     this.status = 'ready';
+    this.endReason = null;
   }
 
   /**
    * Process the next cycle in the simulation.
-   * @returns {SimulationCycle} The newly created cycle
+   * @returns {SimulationCycle | null} The newly created cycle or null if simulation ended
    */
   processNextCycle() {
+    if (this.status === 'finished') {
+      return null;
+    }
+    
     this.status = 'running';
     
     const cycleNumber = this.cycles.length + 1;
-    const previousCycle = this.cycles[cycleNumber - 2];
+    const previousCycle = this.cycles.length > 0 ? this.cycles[this.cycles.length - 1] : null;
     
+    // Validate before creating the next cycle
+    if (previousCycle) {
+      const nextDeposit = previousCycle.loans;
+      const { isValid } = validateReserveConstraints(nextDeposit, this.config.reserveRatio);
+      if (!isValid) {
+        this.status = 'finished';
+        this.endReason = 'insufficient_reserves';
+        return null;
+      }
+    }
+
     const cycle = new SimulationCycle({
       cycleNumber,
       initialDeposit: this.config.initialDeposit,
@@ -61,10 +115,16 @@ export class SimulationState {
 
     this.cycles.push(cycle);
 
-    // Check if we should stop
-    if (cycle.loans <= 0.01 || 
-        (this.config.numCycles && cycleNumber >= this.config.numCycles)) {
-      this.status = 'finished';
+    // Check stopping conditions
+    if (!cycle.isValid) {
+        this.status = 'finished';
+        this.endReason = 'insufficient_reserves';
+    } else if (cycle.loans <= 0.01) {
+        this.status = 'finished';
+        this.endReason = 'natural_completion';
+    } else if (this.config.numCycles && cycleNumber >= this.config.numCycles) {
+        this.status = 'finished';
+        this.endReason = 'max_cycles_reached';
     }
 
     return cycle;
@@ -78,5 +138,30 @@ export class SimulationState {
     return this.cycles.length > 0 ? 
       this.cycles[this.cycles.length - 1].totalMoney : 
       0;
+  }
+
+  /**
+   * Returns the minimum deposit needed for the next cycle to be valid.
+   * @returns {number}
+   */
+  getMinimumDepositForNextCycle() {
+    const { minimumDepositRequired } = validateReserveConstraints(0, this.config.reserveRatio);
+    return minimumDepositRequired;
+  }
+
+  /**
+   * Indicates if the simulation can proceed to the next cycle.
+   * @returns {boolean}
+   */
+  canProceedToNextCycle() {
+    return this.status !== 'finished';
+  }
+
+  /**
+   * Returns the reason why the simulation ended.
+   * @returns {string | null}
+   */
+  getEndReason() {
+    return this.endReason;
   }
 }

@@ -80,43 +80,47 @@ export class FlowDiagram {
     // Render cycles
     simulationState.cycles.forEach((cycle, i) => {
       const xBase = 100 + i * cycleSpacing;
-      const yBase = nodeY + (i % 2 === 0 ? 0 : verticalOffset); // Apply vertical offset for even cycles
-      const reserveY = yBase + reserveYOffset;
+      const yBase = nodeY + (i % 2 === 0 ? 0 : verticalOffset); // Base Y for the container and calculations
+
+      // Vertically center nodes within the container
+      const yMain = yBase + 38;
+      const yReserve = yMain + reserveYOffset;
 
       // 1. Cycle Grouping
       this.drawCycleContainer(xBase - 40, yBase - 70, cycleWidth, 300, i + 1);
 
       // Node positions
-      const depositorX = xBase;
-      const bankX = xBase + 220;
-      const borrowerX = xBase + 440;
+      const depositorX = xBase + 40;
+      const bankX = xBase + 260;
+      const borrowerX = xBase + 480;
 
       // 2. Arrows with improved paths
       // Deposit arrow (curved upwards)
-      this.drawCurvedArrow(depositorX, yBase, bankX, yBase, -70);
-      this.drawPillLabel((depositorX + bankX) / 2, yBase - labelYOffset, `$${cycle.deposits.toFixed(2)} Deposit`, '#fff', '#2e7d32');
+      this.drawCurvedArrow(depositorX, yMain, bankX, yMain, -70);
+      this.drawPillLabel((depositorX + bankX) / 2, yMain - 65, `$${cycle.deposits.toFixed(2)} Deposit`, '#fff', '#2e7d32');
 
       // Reserve arrow (straight)
-      this.drawArrow(bankX, yBase, bankX, reserveY);
-      this.drawPillLabel(bankX, (yBase + reserveY) / 2, `$${cycle.reserves.toFixed(2)} Reserve`, '#fff', '#f9a825');
+      this.drawArrow(bankX, yMain, bankX, yReserve);
+      this.drawPillLabel(bankX, (yMain + yReserve) / 2, `$${cycle.reserves.toFixed(2)} Reserve`, '#fff', '#f9a825');
 
       // Loan arrow (curved upwards)
-      this.drawCurvedArrow(bankX, yBase, borrowerX, yBase, -70);
-      this.drawPillLabel((bankX + borrowerX) / 2, yBase - labelYOffset, `$${cycle.loans.toFixed(2)} Loan`, '#fff', '#c62828');
+      this.drawCurvedArrow(bankX, yMain, borrowerX, yMain, -70);
+      this.drawPillLabel((bankX + borrowerX) / 2, yMain - 65, `$${cycle.loans.toFixed(2)} Loan`, '#fff', '#c62828');
 
       // Spend arrow (to next depositor, curved downwards)
       if (i < totalCycles - 1) {
         const nextXBase = 60 + (i + 1) * cycleSpacing;
         const nextYBase = nodeY + ((i + 1) % 2 === 0 ? 0 : verticalOffset);
-        this.drawCurvedArrow(borrowerX, yBase, nextXBase, nextYBase, 120, true); // Increased curve offset
-        this.drawPillLabel((borrowerX + nextXBase) / 2, (yBase + nextYBase) / 2 + 70, `$${cycle.loans.toFixed(2)} Spend`, '#fff', '#1976d2');
+        const nextYMain = nextYBase + 38;
+        this.drawCurvedArrow(borrowerX, yMain, nextXBase, nextYMain, 120, true); // Increased curve offset
+        this.drawPillLabel((borrowerX + nextXBase) / 2, (yMain + nextYMain) / 2 + 70, `$${cycle.loans.toFixed(2)} Spend`, '#fff', '#1976d2');
       }
 
       // 3. Nodes (drawn last to be on top of arrows)
-      this.drawNode(depositorX, yBase, nodeRadius, '#aaffaa', 'Depositor');
-      this.drawNode(bankX, yBase, nodeRadius, '#ccc', 'Bank');
-      this.drawNode(borrowerX, yBase, nodeRadius, '#ffaaaa', 'Borrower');
-      this.drawNode(bankX, reserveY, nodeRadius, '#ffdd99', 'Reserves', 8);
+      this.drawNode(depositorX, yMain, nodeRadius, '#aaffaa', 'Depositor');
+      this.drawNode(bankX, yMain, nodeRadius, '#ccc', 'Bank');
+      this.drawNode(borrowerX, yMain, nodeRadius, '#ffaaaa', 'Borrower');
+      this.drawNode(bankX, yReserve, nodeRadius, '#ffdd99', 'Reserves', 8);
 
       // Remove the dotted repeat cycle arrow as it's distracting
     });
