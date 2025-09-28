@@ -9,10 +9,11 @@ export class FlowDiagram {
 
   render() {
     this.container.innerHTML = `
-      <div class="flow-diagram" style="overflow-x:auto;">
-        <h3>Money Flow Diagram</h3>
-        <div id="flow-legend" style="float:left; margin-right:20px;"></div>
-        <div id="flow-svg-container" data-testid="flow-diagram" style="min-width:900px;"></div>
+      <div class="flow-diagram-wrapper" style="display: flex; flex-direction: column; align-items: center;">
+        <div id="flow-legend"></div>
+        <div class="flow-diagram" style="overflow-x:auto; width: 100%;">
+          <div id="flow-svg-container" data-testid="flow-diagram" style="min-width:900px;"></div>
+        </div>
       </div>
     `;
 
@@ -21,7 +22,7 @@ export class FlowDiagram {
 
     // Set up the SVG
     this.svgWidth = 1800; // Will be updated dynamically in update()
-    this.svgHeight = 700;
+    this.svgHeight = 565; // Initial height, will be dynamically adjusted
     this.svg = d3.select('#flow-svg-container')
       .append('svg')
       .attr('width', this.svgWidth)
@@ -31,7 +32,7 @@ export class FlowDiagram {
     this.svg.append('defs').append('marker')
       .attr('id', 'arrowhead')
       .attr('viewBox', '0 -5 10 10')
-      .attr('refX', 18)
+      .attr('refX', 45)
       .attr('refY', 0)
       .attr('orient', 'auto')
       .attr('markerWidth', 8)
@@ -43,13 +44,36 @@ export class FlowDiagram {
 
   renderLegend() {
     const legend = document.getElementById('flow-legend');
+    const iconSize = 40;
+    const iconStyle = `width:${iconSize}px; height:${iconSize}px; vertical-align:middle; margin-right:5px;`;
+
+    const getUserIconSvg = (color) => `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${iconStyle} background:${color}; border-radius:8px; border:2px solid #333;">
+        <g transform="translate(12,12) scale(0.7) translate(-12,-12)">${this.USER_ICON_PATH}</g>
+      </svg>
+    `;
+
+    const getBuildingIconSvg = (color) => `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${iconStyle} background:${color}; border-radius:8px; border:2px solid #333;">
+        <g transform="translate(12,12) scale(0.7) translate(-12,-12)">${this.BUILDING_ICON_PATH}</g>
+      </svg>
+    `;
+
+    const getLockIconSvg = (color) => `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${iconStyle} background:${color}; border-radius:8px; border:2px solid #333;">
+        <g transform="translate(12,12) scale(0.7) translate(-12,-12)">${this.LOCK_ICON_PATH}</g>
+      </svg>
+    `;
+
     legend.innerHTML = `
-      <div style="border:1px solid #ccc; border-radius:16px; padding:12px; width:120px; background:#fff; margin-bottom:10px;">
-        <strong>Legend</strong><br><br>
-        <div style="margin-bottom:8px;"><span style="display:inline-block;width:24px;height:24px;background:#aaffaa;border-radius:50%;border:2px solid #333;vertical-align:middle;"></span> Earner & Depositor</div>
-        <div style="margin-bottom:8px;"><span style="display:inline-block;width:24px;height:24px;background:#ccc;border-radius:12px;border:2px solid #333;vertical-align:middle;"></span> Bank</div>
-        <div style="margin-bottom:8px;"><span style="display:inline-block;width:24px;height:24px;background:#ffaaaa;border-radius:50%;border:2px solid #333;vertical-align:middle;"></span> Borrower</div>
-        <div style="margin-bottom:8px;"><span style="display:inline-block;width:24px;height:24px;background:#ffdd99;border-radius:8px;border:2px solid #333;vertical-align:middle;"></span> Reserves</div>
+      <div style="border:1px solid #ccc; border-radius:16px; padding:20px 12px; background:#fff; display: flex; flex-direction: column; align-items: center;">
+        <div style="text-align: center; margin-bottom: 10px;"><strong>Legend</strong></div>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
+          <div style="white-space: nowrap;">${getUserIconSvg('#2e7d32')} Earner & Depositor</div>
+          <div style="white-space: nowrap;">${getBuildingIconSvg('#666')} Bank</div>
+          <div style="white-space: nowrap;">${getUserIconSvg('#c62828')} Borrower</div>
+          <div style="white-space: nowrap;">${getLockIconSvg('#f9a825')} Reserves</div>
+        </div>
       </div>
     `;
   }
@@ -64,8 +88,8 @@ export class FlowDiagram {
     const cycleWidth = 600; // Width of a single cycle group
     const cycleSpacing = 800; // Horizontal spacing between cycles
     const nodeRadius = 32;
-    const nodeY = 220;
-    const verticalOffset = 160; // Vertical zig-zag offset for even cycles
+    const nodeY = 95;
+    const verticalOffset = 220; // Vertical zig-zag offset for even cycles
     const reserveYOffset = 140;
     const labelYOffset = 85; // Increased padding for labels
 
@@ -73,7 +97,12 @@ export class FlowDiagram {
     const totalCycles = simulationState.cycles.length;
     const minWidth = Math.max(900, 100 + totalCycles * cycleSpacing);
     this.svg.attr('width', minWidth);
-    this.svg.attr('height', this.svgHeight + (totalCycles > 1 ? verticalOffset : 0)); // Adjust height for zig-zag
+
+    // Calculate dynamic SVG height based on content
+    const currentMaxY = nodeY + (totalCycles > 1 ? verticalOffset : 0) + 38 + reserveYOffset + nodeRadius;
+    const calculatedSvgHeight = currentMaxY + 40; // 40px bottom padding
+
+    this.svg.attr('height', calculatedSvgHeight);
     const svgContainer = document.getElementById('flow-svg-container');
     svgContainer.style.minWidth = `${minWidth}px`;
 
@@ -117,10 +146,10 @@ export class FlowDiagram {
       }
 
       // 3. Nodes (drawn last to be on top of arrows)
-      this.drawNode(depositorX, yMain, nodeRadius, '#aaffaa', 'Depositor');
-      this.drawNode(bankX, yMain, nodeRadius, '#ccc', 'Bank');
-      this.drawNode(borrowerX, yMain, nodeRadius, '#ffaaaa', 'Borrower');
-      this.drawNode(bankX, yReserve, nodeRadius, '#ffdd99', 'Reserves', 8);
+      this.drawNode(depositorX, yMain, nodeRadius, '#2e7d32', 'Depositor');
+      this.drawNode(bankX, yMain, nodeRadius, '#666', 'Bank');
+      this.drawNode(borrowerX, yMain, nodeRadius, '#c62828', 'Borrower');
+      this.drawNode(bankX, yReserve, nodeRadius, '#f9a825', 'Reserves', 8);
 
       // Remove the dotted repeat cycle arrow as it's distracting
     });
@@ -141,7 +170,7 @@ export class FlowDiagram {
       .attr('x', x)
       .attr('y', y)
       .attr('width', width)
-      .attr('height', height + 40)
+      .attr('height', height + 10)
       .attr('rx', 15)
       .attr('fill', '#f9f9f9')
       .attr('stroke', '#e0e0e0');
@@ -149,44 +178,117 @@ export class FlowDiagram {
     // Cycle number label
     this.svg.append('text')
       .attr('x', x + width / 2)
-      .attr('y', y + 20)
+      .attr('y', y + 25)
       .attr('text-anchor', 'middle')
-      .attr('font-size', 16)
+      .attr('font-size', 20)
       .attr('font-weight', 'bold')
       .attr('fill', '#555')
       .text(`Cycle ${cycleNumber}`);
   }
 
-  drawNode(x, y, r, color, label, borderRadius = 38) {
-    // Draw node shape
-    if (borderRadius === 38) {
-      this.svg.append('circle')
-        .attr('cx', x)
-        .attr('cy', y)
-        .attr('r', r)
-        .attr('fill', color)
-        .attr('stroke', '#333')
-        .attr('stroke-width', 2);
-    } else {
-      this.svg.append('rect')
-        .attr('x', x - r)
-        .attr('y', y - r / 2)
-        .attr('width', r * 2)
-        .attr('height', r)
-        .attr('rx', borderRadius)
-        .attr('fill', color)
-        .attr('stroke', '#333')
-        .attr('stroke-width', 2);
-    }
-    // Short label on node
-    this.svg.append('text')
-      .attr('x', x)
-      .attr('y', y)
+  // SVG Path data for Lucide icons
+  // Extracted from https://github.com/lucide-icons/lucide/tree/main/icons
+  USER_ICON_PATH = '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />';
+  BUILDING_ICON_PATH = '<path d="M6 22V7H2v15"/><path d="M18 22V7h4v15"/><path d="M10 12H7"/><path d="M10 16H7"/><path d="M10 8H7"/><path d="M10 20H7"/><path d="M14 12H11"/><path d="M14 16H11"/><path d="M14 8H11"/><path d="M14 20H11"/><path d="M17 12h-3"/><path d="M17 16h-3"/><path d="M17 8h-3"/><path d="M17 20h-3"/><path d="M22 7V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v3"/>';
+  LOCK_ICON_PATH = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
+
+  // Mapping of node labels to icon paths
+  iconPaths = {
+    'Depositor': this.USER_ICON_PATH,
+    'Bank': this.BUILDING_ICON_PATH,
+    'Borrower': this.USER_ICON_PATH,
+    'Reserves': this.LOCK_ICON_PATH
+  };
+
+  drawIntegratedIconNode(x, y, iconPath, color, label, nodeType, nodeRadius = 32, iconSize = 24) {
+    const group = this.svg.append('g')
+      .attr('transform', `translate(${x}, ${y})`);
+
+    const totalNodeHeight = nodeRadius * 2.5; // Increased height to accommodate icon and label
+    const totalNodeWidth = nodeRadius * 2.5; // Increased width
+
+    // Background shape
+    group.append('rect')
+      .attr('x', -totalNodeWidth / 2)
+      .attr('y', -totalNodeHeight / 2)
+      .attr('width', totalNodeWidth)
+      .attr('height', totalNodeHeight)
+      .attr('rx', 8) // Rounded corners for all nodes
+      .attr('fill', color)
+      .attr('stroke', '#333')
+      .attr('stroke-width', 2);
+
+    // Icon positioning and scaling
+    const iconScale = (nodeRadius * 2 * 0.6) / iconSize; // Icon takes 60% of original node diameter
+    const fontSize = 13; // Assuming font size is 13 as per the text element below
+
+    // Calculate the half height of the icon's visual representation
+    const iconVisualHalfHeight = (nodeRadius * 2 * 0.6) / 2;
+    // Calculate the half height of the label's visual representation
+    const labelVisualHalfHeight = fontSize / 2;
+
+    // Calculate the shift needed to vertically center the combined icon and label block
+    // The current midpoint of the combined visual block is (-iconVisualHalfHeight + labelVisualHalfHeight) / 2
+    // To move this midpoint to 0, we need to add the negative of this value as a shift.
+    const verticalShift = (iconVisualHalfHeight - labelVisualHalfHeight) / 2;
+
+    const iconYOffset = -totalNodeHeight / 5 + verticalShift; // Adjust icon position
+
+    group.append('g')
+      .attr('transform', `translate(0, ${iconYOffset}) scale(${iconScale}) translate(${-iconSize / 2}, ${-iconSize / 2})`)
+      .html(iconPath)
+      .selectAll('path, rect, circle')
+      .attr('fill', 'none')
+      .attr('stroke', 'white')
+      .attr('stroke-width', 3);
+
+    // Label positioning
+    const labelYOffset = totalNodeHeight / 5 + verticalShift; // Adjust label position
+
+    group.append('text')
+      .attr('y', labelYOffset)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'central')
-      .attr('font-size', 15)
-      .attr('fill', '#333')
+      .attr('font-size', 13) // Reduced font size by 2 pixels
+      .attr('font-weight', 'bold')
+      .attr('fill', 'white')
       .text(label);
+  }
+
+  drawNode(x, y, r, color, label) {
+    const iconPath = this.iconPaths[label];
+    if (iconPath) {
+      this.drawIntegratedIconNode(x, y, iconPath, color, label, label, r);
+    } else {
+      // Fallback to original drawing if no icon is found (should not happen with current labels)
+      if (label === 'Reserves') {
+        this.svg.append('rect')
+          .attr('x', x - r)
+          .attr('y', y - r / 2)
+          .attr('width', r * 2)
+          .attr('height', r)
+          .attr('rx', 8)
+          .attr('fill', color)
+          .attr('stroke', '#333')
+          .attr('stroke-width', 2);
+      } else {
+        this.svg.append('circle')
+          .attr('cx', x)
+          .attr('cy', y)
+          .attr('r', r)
+          .attr('fill', color)
+          .attr('stroke', '#333')
+          .attr('stroke-width', 2);
+      }
+      this.svg.append('text')
+        .attr('x', x)
+        .attr('y', y)
+        .attr('text-anchor', 'middle')
+        .attr('dominant-baseline', 'central')
+        .attr('font-size', 15)
+        .attr('fill', '#333')
+        .text(label);
+    }
   }
 
   drawArrow(x1, y1, x2, y2, dotted = false) {

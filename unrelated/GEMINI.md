@@ -56,7 +56,6 @@ npm run test:watch
 
 ## Development Conventions
 
-*   The project follows Test-Driven Development (TDD) principles. All new features should be accompanied by corresponding tests.
 *   The code is organized into components, services, and styles.
 *   The application uses a component-based architecture, with the `App` component as the main entry point.
 *   The simulation logic is separated from the UI components and is contained in the `src/services` directory.

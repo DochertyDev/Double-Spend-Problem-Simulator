@@ -1,1 +1,1 @@
-Insert plan and task instructions
+Add new task instructions
