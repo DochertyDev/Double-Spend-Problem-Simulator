@@ -16,6 +16,14 @@ export class GraphView {
 
   initChart() {
     const ctx = document.getElementById('money-supply-chart').getContext('2d');
+
+    const createGradient = (color) => {
+      const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+      gradient.addColorStop(0, color + '80'); // 50% opacity
+      gradient.addColorStop(1, color + '00'); // 0% opacity
+      return gradient;
+    };
+
     this.chart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -24,19 +32,25 @@ export class GraphView {
           {
             label: 'Total Money',
             data: [],
-            borderColor: 'rgb(75, 192, 192)',
+            borderColor: '#8b5cf6',
+            backgroundColor: createGradient('#8b5cf6'),
+            fill: true,
             tension: 0.1
           },
           {
             label: 'Deposits',
             data: [],
-            borderColor: 'rgb(54, 162, 235)',
+            borderColor: '#00d4ff',
+            backgroundColor: createGradient('#00d4ff'),
+            fill: true,
             tension: 0.1
           },
           {
             label: 'Loans',
             data: [],
-            borderColor: 'rgb(255, 99, 132)',
+            borderColor: '#ec4899',
+            backgroundColor: createGradient('#ec4899'),
+            fill: true,
             tension: 0.1
           }
         ]
@@ -73,7 +87,10 @@ export class GraphView {
                 y: {
                   beginAtZero: true,
                   ticks: {
-                    color: '#1f2937' // Dark text for y-axis labels
+                    color: '#1f2937', // Dark text for y-axis labels
+                    callback: function(value) {
+                      return this.formatCurrency(value);
+                    }.bind(this)
                   },
                   title: {
                     display: true,
@@ -83,6 +100,16 @@ export class GraphView {
                 }
               }
             }    });
+  }
+
+  formatCurrency(value) {
+    if (value >= 1000000) {
+      return `$${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `$${(value / 1000).toFixed(1)}K`;
+    } else {
+      return `$${value.toFixed(2)}`;
+    }
   }
 
   update(simulationState) {

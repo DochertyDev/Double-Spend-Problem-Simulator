@@ -53,12 +53,8 @@ body {
   background: var(--gradient-main);
   z-index: -1;
   filter: blur(10px);
-  opacity: 0;
-  transition: opacity var(--transition-speed) ease-in-out;
-}
-
-.glass-card:hover::before, .widget:hover::before {
   opacity: 0.4;
+  transition: opacity var(--transition-speed) ease-in-out;
 }
 
 .glass-card {

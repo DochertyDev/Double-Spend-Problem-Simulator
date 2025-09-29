@@ -10,7 +10,7 @@ export class App {
   constructor() {
     this.state = {
       simulationState: null,
-      currentView: 'table',
+      currentView: 'graph',
       educationMode: false,
       simulationSpeed: 5 // Default speed
     };
@@ -36,13 +36,13 @@ export class App {
           <div id="dashboard"></div>
           <div id="visualization">
             <div class="view-controls">
-              <button class="view-button active" data-view="table">Table View</button>
-              <button class="view-button" data-view="graph">Graph View</button>
+              <button class="view-button active" data-view="graph">Graph View</button>
+              <button class="view-button" data-view="table">Table View</button>
               <button class="view-button" data-view="flow">Flow Diagram</button>
             </div>
             <div class="widget">
-              <div class="table-view"></div>
-              <div class="graph-view" style="display: none;"></div>
+              <div class="table-view" style="display: none;"></div>
+              <div class="graph-view"></div>
               <div id="flow-diagram" style="display: none;"></div>
             </div>
           </div>

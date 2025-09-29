@@ -7,7 +7,7 @@ export class Dashboard {
   render() {
     this.container.innerHTML = `
       <div class="glass-card dashboard-layout">
-        <div class="dashboard-top-row">
+        <div class="dashboard-top-row glass-card">
           <div class="metric">
             <label>Initial Deposit:</label>
             <span id="initial-deposit" class="metric-green" style="font-weight: bold;">$0.00</span>
