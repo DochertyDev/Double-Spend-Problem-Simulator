@@ -41,29 +41,48 @@ export class GraphView {
           }
         ]
       },
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: 'Money Supply Growth'
-          },
-          tooltip: {
-            mode: 'index',
-            intersect: false,
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Amount ($)'
-            }
-          }
-        }
-      }
-    });
+            options: {
+              responsive: true,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Money Supply Growth',
+                  color: '#1f2937' // Dark text for title
+                },
+                legend: {
+                  labels: {
+                    color: '#1f2937' // Dark text for legend
+                  }
+                },
+                tooltip: {
+                  mode: 'index',
+                  intersect: false,
+                }
+              },
+              scales: {
+                x: {
+                  ticks: {
+                    color: '#1f2937' // Dark text for x-axis labels
+                  },
+                  title: {
+                    display: true,
+                    text: 'Cycle',
+                    color: '#1f2937' // Dark text for x-axis title
+                  }
+                },
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    color: '#1f2937' // Dark text for y-axis labels
+                  },
+                  title: {
+                    display: true,
+                    text: 'Amount ($)',
+                    color: '#1f2937' // Dark text for y-axis title
+                  }
+                }
+              }
+            }    });
   }
 
   update(simulationState) {

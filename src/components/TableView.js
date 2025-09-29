@@ -6,7 +6,7 @@ export class TableView {
 
   render() {
     this.container.innerHTML = `
-      <div class="table-container">
+<div class="table-container table-widget" style="padding: var(--card-padding)">
         <table class="simulation-table">
           <thead>
             <tr>

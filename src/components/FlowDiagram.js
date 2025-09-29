@@ -66,7 +66,7 @@ export class FlowDiagram {
     `;
 
     legend.innerHTML = `
-      <div style="border:1px solid #ccc; border-radius:16px; padding:20px 12px; background:#fff; display: flex; flex-direction: column; align-items: center;">
+      <div style="padding:20px 12px; display: flex; flex-direction: column; align-items: center;">
         <div style="text-align: center; margin-bottom: 10px;"><strong>Legend</strong></div>
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
           <div style="white-space: nowrap;">${getUserIconSvg('#2e7d32')} Earner & Depositor</div>
@@ -126,15 +126,15 @@ export class FlowDiagram {
       // 2. Arrows with improved paths
       // Deposit arrow (curved upwards)
       this.drawCurvedArrow(depositorX, yMain, bankX, yMain, -70);
-      this.drawPillLabel((depositorX + bankX) / 2, yMain - 65, `$${cycle.deposits.toFixed(2)} Deposit`, '#fff', '#2e7d32');
+      this.drawPillLabel((depositorX + bankX) / 2, yMain - 65, `Deposit: $${cycle.deposits.toFixed(2)}`, '#fff', '#2e7d32');
 
       // Reserve arrow (straight)
       this.drawArrow(bankX, yMain, bankX, yReserve);
-      this.drawPillLabel(bankX, (yMain + yReserve) / 2, `$${cycle.reserves.toFixed(2)} Reserve`, '#fff', '#f9a825');
+      this.drawPillLabel(bankX, (yMain + yReserve) / 2, `Reserve: $${cycle.reserves.toFixed(2)}`, '#fff', '#f9a825');
 
       // Loan arrow (curved upwards)
       this.drawCurvedArrow(bankX, yMain, borrowerX, yMain, -70);
-      this.drawPillLabel((bankX + borrowerX) / 2, yMain - 65, `$${cycle.loans.toFixed(2)} Loan`, '#fff', '#c62828');
+      this.drawPillLabel((bankX + borrowerX) / 2, yMain - 65, `Loan: $${cycle.loans.toFixed(2)}`, '#fff', '#c62828');
 
       // Spend arrow (to next depositor, curved downwards)
       if (i < totalCycles - 1) {
@@ -142,7 +142,7 @@ export class FlowDiagram {
         const nextYBase = nodeY + ((i + 1) % 2 === 0 ? 0 : verticalOffset);
         const nextYMain = nextYBase + 38;
         this.drawCurvedArrow(borrowerX, yMain, nextXBase, nextYMain, 120, true); // Increased curve offset
-        this.drawPillLabel((borrowerX + nextXBase) / 2, (yMain + nextYMain) / 2 + 70, `$${cycle.loans.toFixed(2)} Spend`, '#fff', '#1976d2');
+        this.drawPillLabel((borrowerX + nextXBase) / 2, (yMain + nextYMain) / 2 + 70, `Spend: $${cycle.loans.toFixed(2)}`, '#fff', '#1976d2');
       }
 
       // 3. Nodes (drawn last to be on top of arrows)
@@ -172,7 +172,7 @@ export class FlowDiagram {
       .attr('width', width)
       .attr('height', height + 10)
       .attr('rx', 15)
-      .attr('fill', '#f9f9f9')
+      .attr('fill', 'transparent')
       .attr('stroke', '#e0e0e0');
 
     // Cycle number label
@@ -182,7 +182,7 @@ export class FlowDiagram {
       .attr('text-anchor', 'middle')
       .attr('font-size', 20)
       .attr('font-weight', 'bold')
-      .attr('fill', '#555')
+      .attr('fill', '#1f2937')
       .text(`Cycle ${cycleNumber}`);
   }
 

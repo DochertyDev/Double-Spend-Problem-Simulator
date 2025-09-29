@@ -6,28 +6,30 @@ export class Dashboard {
 
   render() {
     this.container.innerHTML = `
-      <div class="dashboard">
-        <div class="metric">
-          <label>Initial Deposit:</label>
-          <span id="initial-deposit" class="metric-green">$0.00</span>
+      <div class="glass-card dashboard-layout">
+        <div class="dashboard-top-row">
+          <div class="metric">
+            <label>Initial Deposit:</label>
+            <span id="initial-deposit" class="metric-green" style="font-weight: bold;">$0.00</span>
+          </div>
+          <div class="metric">
+            <label>Money Created:</label>
+            <span id="money-created" class="metric-red" style="font-weight: bold;">$0.00</span>
+          </div>
+          <div class="metric">
+            <label>Total Money:</label>
+            <span id="total-money" class="metric-orange" style="font-weight: bold;">$0.00</span>
+          </div>
         </div>
-        <div class="metric">
-          <label>Money Created:</label>
-          <span id="money-created" class="metric-red">$0.00</span>
-        </div>
-        <div class="metric">
-          <label>Total Money:</label>
-          <span id="total-money" class="metric-orange">$0.00</span>
-        </div>
-        <div class="dashboard-bottom-metrics">
-          <div class="metric-pill-combined">
+        <div class="dashboard-bottom-row">
+          <div class="metric-pill-combined glass-card">
             <div class="metric metric-small">
               <label>Current Cycle:</label>
-              <span id="current-cycle">0</span>
+              <span id="current-cycle" style="font-weight: bold;">0</span>
             </div>
             <div class="metric metric-small">
               <label>Money Multiplier:</label>
-              <span id="money-multiplier">1.00x</span>
+              <span id="money-multiplier" style="font-weight: bold;">1.00x</span>
             </div>
           </div>
         </div>

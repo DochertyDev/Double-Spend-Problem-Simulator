@@ -1,5 +1,29 @@
 /* Main styles for Double Spend Problem Simulator */
 
+/* Design System & Glassmorphism Foundation */
+:root {
+  /* Color Palette */
+  --primary-bg-start: #0f0f23;
+  --primary-bg-end: #1a1a2e;
+  --card-bg-color: rgba(255, 255, 255, 0.1);
+  --card-border-color: rgba(255, 255, 255, 0.2);
+  --accent-blue: #00d4ff;
+  --accent-purple: #8b5cf6;
+  --accent-green: #10b981;
+  --accent-amber: #f59e0b;
+  --text-primary: #f8fafc;
+  --text-secondary: rgba(255, 255, 255, 0.8);
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  /* Glassmorphism Properties */
+  --backdrop-blur: 20px;
+  --card-border-radius: 16px;
+  --card-padding: 24px;
+  --transition-speed: 0.3s;
+}
+
 /* Reset and base styles */
 * {
   box-sizing: border-box;
@@ -8,10 +32,61 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-family: var(--font-family);
   line-height: 1.6;
-  color: #333;
-  background-color: #f5f5f5;
+  color: var(--text-primary);
+  background-image: linear-gradient(to bottom right, var(--primary-bg-start), var(--primary-bg-end));
+  background-attachment: fixed;
+}
+
+/* Core Glassmorphism Card Component */
+.glass-card, .widget {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-speed) ease-in-out;
+}
+
+.glass-card::before, .widget::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px; right: -2px; bottom: -2px;
+  background: var(--gradient-main);
+  z-index: -1;
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity var(--transition-speed) ease-in-out;
+}
+
+.glass-card:hover::before, .widget:hover::before {
+  opacity: 0.4;
+}
+
+.glass-card {
+  background: var(--card-bg-color);
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-border-radius);
+  padding: var(--card-padding);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Interactive States */
+.glass-card:hover {
+  transform: scale(1.02);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.glass-card:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Considerations */
+@media (max-width: 768px) {
+  :root {
+    --backdrop-blur: 10px;
+  }
 }
 
 /* Layout */
@@ -26,6 +101,7 @@ header {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  color: var(--text-primary);
 }
 
 main {
@@ -34,14 +110,7 @@ main {
   grid-template-columns: 1fr;
 }
 
-/* Controls */
-.controls {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
+/* Input Group Styles */
 .input-group {
   margin-bottom: 1rem;
 }
@@ -50,25 +119,77 @@ main {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  color: var(--text-secondary);
 }
 
 .input-group input {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 0.75rem;
+  border: 1px solid var(--card-border-color);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all var(--transition-speed) ease;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 10px var(--accent-blue);
 }
 
 .input-group input.invalid {
-  border-color: #ff4444;
+  border-color: var(--accent-amber);
 }
 
-.simulation-controls {
+/* General Button Styling */
+:root {
+  --gradient-main: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #3b82f6 100%);
+  --gradient-hover: linear-gradient(135deg, #a88cf8 0%, #f06aaa 50%, #63a0f8 100%);
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background-image: var(--gradient-main);
+  background-size: 200% auto;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  font-weight: 500;
+}
+
+button:hover {
+  background-position: right center; /* Change the position of the background image on hover */
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+button:disabled {
+  background-image: none;
+  background-color: #9ca3af; /* Gray */
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* View Controls */
+.view-controls {
   display: flex;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-bottom: 1rem;
 }
 
+.view-button.active {
+  background-image: var(--gradient-hover);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+}
+
+/* Slider */
 input[type=range] {
   -webkit-appearance: none;
   appearance: none;
@@ -76,242 +197,80 @@ input[type=range] {
   background: transparent;
 }
 
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  background: #007bff;
-  cursor: pointer;
-  margin-top: -6px;
-}
-
-input[type=range]::-moz-range-thumb {
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  background: #007bff;
-  cursor: pointer;
-}
-
-input[type=range]::-ms-thumb {
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  background: #007bff;
-  cursor: pointer;
-}
-
 input[type=range]::-webkit-slider-runnable-track {
   width: 100%;
-  height: 4px;
+  height: 10px;
   cursor: pointer;
-  background: #ddd;
+  background: var(--gradient-main);
   border-radius: 5px;
 }
 
-input[type=range]::-moz-range-track {
-  width: 100%;
-  height: 4px;
-  cursor: pointer;
-  background: #ddd;
-  border-radius: 5px;
-}
-
-input[type=range]::-ms-track {
-  width: 100%;
-  height: 4px;
-  cursor: pointer;
-  background: transparent;
-  border-color: transparent;
-  color: transparent;
-}
-
-#speed-label {
-  background-color: #007bff;
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 1rem;
-  font-size: 0.875rem;
-  vertical-align: middle;
-  margin-left: 0.5rem;
-}
-
-/* Dashboard */
-.dashboard {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
   background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.metric {
-  text-align: center;
-}
-
-.metric label {
-  display: block;
-  font-weight: 500;
-  color: #666;
-}
-
-.metric span {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-/* Views */
-.view-controls {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.view-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  background: #eee;
-  border-radius: 4px;
   cursor: pointer;
-}
-
-.view-button.active {
-  background: #007bff;
-  color: white;
-}
-
-.view-container {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Table View */
-.table-view {
-  height: 100%;
-  overflow: hidden; /* Hide overflow of the container itself */
-  padding: 1.5rem; /* Add padding to specific views that need it */
-}
-
-.table-container {
-  height: 100%; /* Make table-container take full height of its parent */
-  overflow-y: auto; /* Enable vertical scrolling for the table content */
-}
-
-/* Flow Diagram */
-#flow-diagram {
-  padding: 1.5rem; /* Add padding to specific views that need it */
-}
-
-/* New styles for graph view */
-.graph-view {
-  width: 100%;
-  height: 100%;
-  padding: 1.5rem; /* Add padding to the graph-view itself */
-}
-
-.graph-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-#money-supply-chart {
-  width: 100% !important;
-  height: 100% !important;
+  margin-top: -7px; /* Center the thumb on the track */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 
-
-.simulation-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.simulation-table th,
-.simulation-table td {
-  padding: 0.75rem;
-  text-align: right;
-  border-bottom: 1px solid #eee;
-}
-
-.simulation-table th {
-  background: #f8f9fa;
-  font-weight: 500;
-}
-
-/* Flow Diagram */
-.flow-diagram {
-  background: white;
-  padding: 0.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.flow-diagram h3 {
-  margin-bottom: 1rem;
-}
-
-#flow-svg-container {
-  overflow-x: auto;
-  width: 100%;
-}
-
-.node {
-  fill: white;
-  stroke: #333;
-  stroke-width: 2px;
-}
-
-.flow-line {
-  stroke: #333;
-  stroke-width: 2px;
-}
-
-.flow-label {
-  font-size: 12px;
-  fill: #666;
-}
-
-/* Education Mode */
+/* Tooltip */
 .tooltip {
   position: fixed;
-  background: #333;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  padding: 1rem;
   font-size: 0.875rem;
   max-width: 250px;
   z-index: 1000;
   pointer-events: none;
+  /* Applying glassmorphism to tooltips */
+  background: var(--card-bg-color);
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-border-radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .has-tooltip {
-  border-bottom: 1px dotted #666;
+  border-bottom: 1px dotted var(--accent-blue);
   cursor: help;
 }
 
-/* Buttons */
-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  background: #007bff;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.2s;
+/* Phase 4: Dashboard Layout Restructure */
+
+.dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-button:hover {
-  background: #0056b3;
+.dashboard-top-row, .table-widget {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
 }
 
-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
+.dashboard-bottom-row {
+  display: flex;
+  justify-content: center;
+}
+
+.metric-pill-combined {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem 2rem;
+  border-radius: 50px; /* Pill shape */
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
 }
 
 /* Responsive Design */
@@ -323,61 +282,54 @@ button:disabled {
   #visualization {
     grid-column: span 2;
   }
-
-  #flow-diagram {
-    grid-column: span 2;
-  }
 }
 
-@media (min-width: 1024px) {
-  .dashboard {
-    grid-template-columns: repeat(3, 1fr);
-  }
+/* Phase 1: Table View Formatting Fix */
+
+:root {
+  --widget-bg: #ffffff;
+  --text-on-white: #1f2937;
 }
 
-/* Custom metric colors */
-.metric-green {
-  color: #28a745; /* Bootstrap's success green */
+.widget {
+  background-color: var(--widget-bg);
+  color: var(--text-on-white);
+  border-radius: var(--card-border-radius);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-.metric-red {
-  color: #dc3545; /* Bootstrap's danger red */
+.table-widget {
+  overflow-y: auto;
+  height: 100%;
 }
 
-.metric-orange {
-  color: #fd7e14; /* Bootstrap's warning orange */
+.simulation-table {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
-/* Smaller metrics */
-.metric-small label {
-  font-size: 0.8rem; /* Smaller label for combined pill */
-  color: #555;
+.simulation-table thead th {
+  background-color: #f3f4f6; /* Light gray */
+  font-weight: 600;
+  padding: 12px 15px;
+  text-align: right;
+  border-bottom: 2px solid #e5e7eb;
 }
 
-.metric-small span {
-  font-size: 1.1rem; /* Slightly larger value for readability */
+.simulation-table tbody tr:nth-child(even) {
+  background-color: #f9fafb; /* Lighter gray for zebra striping */
 }
 
-/* Combined pill shape for specific metrics */
-.metric-pill-combined {
-  background-color: #f0f0f0; /* Very light grey */
-  padding: 0.5rem 1.5rem; /* Adjust padding */
-  border-radius: 25px; /* Pill shape */
-  display: flex;
-  align-items: center;
-  gap: 1.5rem; /* Space between the two metrics */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+.simulation-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #e5e7eb;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  text-align: right;
 }
 
-.metric-pill-combined .metric {
-  text-align: center; /* Center text within each metric */
-  margin: 0; /* Remove default metric margin */
-}
-
-/* Layout for bottom metrics */
-.dashboard-bottom-metrics {
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-  grid-column: 1 / -1; /* Span across all columns */
+.simulation-table th:first-child,
+.simulation-table td:first-child {
+  text-align: left;
 }

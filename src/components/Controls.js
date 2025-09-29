@@ -9,7 +9,7 @@ export class Controls {
 
   render() {
     this.container.innerHTML = `
-      <div class="controls">
+      <div class="glass-card">
         <div class="input-group">
           <label for="initial-deposit">Initial Deposit:</label>
           <input type="number" id="initial-deposit" min="0" step="100" value="1000">
