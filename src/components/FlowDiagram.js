@@ -69,10 +69,10 @@ export class FlowDiagram {
       <div style="padding:20px 12px; display: flex; flex-direction: column; align-items: center;">
         <div style="text-align: center; margin-bottom: 10px;"><strong>Legend</strong></div>
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
-          <div style="white-space: nowrap;">${getUserIconSvg('#2e7d32')} Earner & Depositor</div>
+          <div style="white-space: nowrap;">${getUserIconSvg('#00d4ff')} Earner & Depositor</div>
           <div style="white-space: nowrap;">${getBuildingIconSvg('#666')} Bank</div>
-          <div style="white-space: nowrap;">${getUserIconSvg('#c62828')} Borrower</div>
-          <div style="white-space: nowrap;">${getLockIconSvg('#f9a825')} Reserves</div>
+          <div style="white-space: nowrap;">${getUserIconSvg('#ec4899')} Borrower</div>
+          <div style="white-space: nowrap;">${getLockIconSvg('#8b5cf6')} Reserves</div>
         </div>
       </div>
     `;
@@ -126,15 +126,15 @@ export class FlowDiagram {
       // 2. Arrows with improved paths
       // Deposit arrow (curved upwards)
       this.drawCurvedArrow(depositorX, yMain, bankX, yMain, -70);
-      this.drawPillLabel((depositorX + bankX) / 2, yMain - 65, `Deposit: $${cycle.deposits.toFixed(2)}`, '#fff', '#2e7d32');
+      this.drawPillLabel((depositorX + bankX) / 2, yMain - 65, `Deposit: ${cycle.deposits.toFixed(2)}`, '#fff', '#00d4ff');
 
       // Reserve arrow (straight)
       this.drawArrow(bankX, yMain, bankX, yReserve);
-      this.drawPillLabel(bankX, (yMain + yReserve) / 2, `Reserve: $${cycle.reserves.toFixed(2)}`, '#fff', '#f9a825');
+      this.drawPillLabel(bankX, (yMain + yReserve) / 2, `Reserve: ${cycle.reserves.toFixed(2)}`, '#fff', '#8b5cf6');
 
       // Loan arrow (curved upwards)
       this.drawCurvedArrow(bankX, yMain, borrowerX, yMain, -70);
-      this.drawPillLabel((bankX + borrowerX) / 2, yMain - 65, `Loan: $${cycle.loans.toFixed(2)}`, '#fff', '#c62828');
+      this.drawPillLabel((bankX + borrowerX) / 2, yMain - 65, `Loan: ${cycle.loans.toFixed(2)}`, '#fff', '#ec4899');
 
       // Spend arrow (to next depositor, curved downwards)
       if (i < totalCycles - 1) {
@@ -146,10 +146,10 @@ export class FlowDiagram {
       }
 
       // 3. Nodes (drawn last to be on top of arrows)
-      this.drawNode(depositorX, yMain, nodeRadius, '#2e7d32', 'Depositor');
+      this.drawNode(depositorX, yMain, nodeRadius, '#00d4ff', 'Depositor');
       this.drawNode(bankX, yMain, nodeRadius, '#666', 'Bank');
-      this.drawNode(borrowerX, yMain, nodeRadius, '#c62828', 'Borrower');
-      this.drawNode(bankX, yReserve, nodeRadius, '#f9a825', 'Reserves', 8);
+      this.drawNode(borrowerX, yMain, nodeRadius, '#ec4899', 'Borrower');
+      this.drawNode(bankX, yReserve, nodeRadius, '#8b5cf6', 'Reserves', 8);
 
       // Remove the dotted repeat cycle arrow as it's distracting
     });
