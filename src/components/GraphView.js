@@ -2,6 +2,7 @@ export class GraphView {
   constructor(container) {
     this.container = container;
     this.chart = null;
+    this.initialDeposit = 0;
     this.render();
   }
 
@@ -71,6 +72,31 @@ export class GraphView {
                 tooltip: {
                   mode: 'index',
                   intersect: false,
+                },
+                annotation: {
+                  annotations: {
+                    initialDepositLine: {
+                      type: 'line',
+                      yMin: 0,
+                      yMax: 0,
+                      borderColor: '#f59e0b',
+                      borderWidth: 2,
+                      borderDash: [8, 4],
+                      label: {
+                        display: true,
+                        content: 'Initial Deposit',
+                        position: 'end',
+                        backgroundColor: 'rgba(245, 158, 11, 0.9)',
+                        color: '#ffffff',
+                        font: {
+                          size: 11,
+                          weight: 'bold'
+                        },
+                        padding: 4,
+                        xAdjust: -5
+                      }
+                    }
+                  }
                 }
               },
               scales: {
@@ -120,6 +146,13 @@ export class GraphView {
     const totalMoney = cycles.map(cycle => cycle.totalMoney);
     const deposits = cycles.map(cycle => cycle.deposits);
     const loans = cycles.map(cycle => cycle.loans);
+
+    // Update initial deposit value and guide line position
+    if (simulationState.config && simulationState.config.initialDeposit !== this.initialDeposit) {
+      this.initialDeposit = simulationState.config.initialDeposit;
+      this.chart.options.plugins.annotation.annotations.initialDepositLine.yMin = this.initialDeposit;
+      this.chart.options.plugins.annotation.annotations.initialDepositLine.yMax = this.initialDeposit;
+    }
 
     this.chart.data.labels = labels;
     this.chart.data.datasets[0].data = totalMoney;
