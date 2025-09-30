@@ -38,7 +38,6 @@ The Double Spend Problem Simulator illustrates how fractional-reserve banking ca
 - **Key Metrics Dashboard**
   - 💰 Starting deposit tracking
   - 💸 Total money creation calculation
-  - 📊 Current reserve ratio display
   - 🌐 System-wide money supply monitoring
 
 ## 💻 Technology Stack
