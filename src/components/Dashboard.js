@@ -13,7 +13,7 @@ export class Dashboard {
             <span id="initial-deposit" class="metric-green" style="font-weight: bold;">$0.00</span>
           </div>
           <div class="metric">
-            <label>Money Created:</label>
+            <label data-education="Money Created">Money Created:</label>
             <span id="money-created" class="metric-red" style="font-weight: bold;">$0.00</span>
           </div>
           <div class="metric">
@@ -24,7 +24,7 @@ export class Dashboard {
         <div class="dashboard-bottom-row">
           <div class="metric-pill-combined glass-card">
             <div class="metric metric-small">
-              <label>Current Cycle:</label>
+              <label data-education="Current Cycle">Current Cycle:</label>
               <span id="current-cycle" style="font-weight: bold;">0</span>
             </div>
             <div class="metric metric-small">
