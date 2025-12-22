@@ -1,0 +1,5 @@
+{
+  "name": "Double Spend Problem Simulator",
+  "description": "An interactive tool to visualize and simulate how the fractional-reserve banking system creates money, demonstrating the money multiplier effect through flow diagrams, charts, and detailed metrics.",
+  "requestFramePermissions": []
+}
