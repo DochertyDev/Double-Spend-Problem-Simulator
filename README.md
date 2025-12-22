@@ -4,7 +4,10 @@
   </a>
 </p>
 
+<div align="center">
+
 _Click the logo above to try the app via website!_
+</div>
 
 <h1 align="center">
 Double Spend Problem Simulator
