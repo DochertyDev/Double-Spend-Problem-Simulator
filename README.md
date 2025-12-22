@@ -48,7 +48,7 @@ Double Spend Problem Simulator
 
 ## 📄 Overview
 
-The Double Spend Problem Simulator is an interactive web application designed to demystify the concept of money creation within a fractional-reserve banking system. It allows users to visually and numerically explore how an initial deposit can lead to a multiplied money supply, effectively demonstrating the "double-spend" phenomenon in this context. This educational tool is ideal for students, economists, or anyone interested in understanding the fundamental mechanics of modern banking and monetary policy.
+The Double Spend Problem Simulator is an interactive web application designed to demystify the concept of money creation within a fractional-reserve banking system. It allows users to visually and numerically explore how an initial deposit can lead to a multiplied money supply through the fractional-reserve banking multiplier effect. This educational tool is ideal for students, economists, or anyone interested in understanding the fundamental mechanics of modern banking and monetary policy.
 
 ## Features
 
@@ -64,12 +64,12 @@ The Double Spend Problem Simulator is an interactive web application designed to
 
 ## 🚀 Quick Start (Local Development)
 
-This project is a client-side web application. No complex backend setup is required.
+This project is a client-side web application. No complex backend setup is required. **For easy access, it is recommended accessing the website by clicking the logo at the top of this page**, but if you want to dive deep then feel free to follow the instructions below!
 
 ### Prerequisites
 
--   Node.js (v14 or higher)
--   npm (Node Package Manager)
+-   Node.js (v18 or higher)
+-   npm (v10 or higher)
 
 ### Setup Instructions
 
@@ -97,23 +97,24 @@ This project is a client-side web application. No complex backend setup is requi
     npm run dev
     ```
 
-    This will typically open the application in your browser at `http://localhost:5173`.
+    This will typically open the application in your browser at `http://localhost:3000`.
 
 ## ⚙️ Usage
 
-1.  **Launch the Application:** After following the "Quick Start" instructions, open the provided local URL in your web browser.
-2.  **Configure Simulation:** Use the controls to set your desired "Initial Deposit" and "Reserve Ratio". You can also adjust the "Simulation Speed".
-3.  **Start Simulation:** Click the "Start Simulation" button to begin.
-4.  **Control Playback:** Use the "Pause", "Step", and "Rerun" buttons to manage the simulation flow.
-5.  **Switch Views:** Toggle between "Graph View", "Table View", and "Flow Diagram" to observe the simulation data in different formats.
-6.  **Activate Education Mode:** Click the "Education Mode" button to enable contextual explanations and insights.
+1.  **Launch the Application:** Visit https://DochertyDev.github.io/Double-Spend-Problem-Simulator/ to use the live version, or follow the "Quick Start" instructions to run locally.
+2.  **Configure Simulation:** Use the sidebar controls to set your desired "Initial Deposit" (in dollars) and "Reserve Ratio" (as a percentage). You can also adjust the "Simulation Speed" to control playback speed.
+3.  **Start Simulation:** Click the "PLAY SIMULATION" button to begin the simulation.
+4.  **Control Playback:** Use the "PAUSE", "STEP", and "RESET" buttons to manage the simulation flow and restart as needed.
+5.  **Switch Views:** Toggle between "Flow", "Table", and "Graph" tabs at the top to observe the simulation data in different formats.
+6.  **Monitor Metrics:** The real-time dashboard displays key metrics including the starting deposit, total money created, and current money supply.
 
 ## 🛠️ Technologies Used
 
--   **Frontend:** HTML5, CSS3, JavaScript (ES6+)
--   **Development Server:** Vite
--   **Visualizations:** D3.js, Chart.js
--   **Testing:** Jest, Testing Library
+-   **Frontend:** React 19.2.3, TypeScript, HTML5, CSS3
+-   **Build Tool:** Vite 6.2.0
+-   **Styling:** Tailwind CSS (via CDN), Font Awesome Icons
+-   **Visualizations:** Recharts 3.6.0
+-   **Deployment:** GitHub Pages with GitHub Actions CI/CD
 
 ## 🔒 Security Notes
 
@@ -121,8 +122,9 @@ This is a client-side, static web application designed for educational purposes.
 
 -   **No Data Collection:** The application does not collect, store, or transmit any user data.
 -   **Local Operation:** All simulations and calculations are performed locally on the user's machine.
--   **No External APIs (beyond CDNs):** The application relies only on local resources and publicly available CDN-hosted libraries (D3.js, Chart.js).
+-   **No External APIs (beyond CDNs):** The application relies only on publicly available CDN-hosted libraries (Tailwind CSS, Font Awesome, React, and Recharts).
 -   **Client-Side Logic:** The core simulation logic is executed in the browser, making it transparent and auditable by users.
+-   **Static Deployment:** The application is deployed as a static site on GitHub Pages with no server-side processing.
 
 ## ❓ Troubleshooting
 
@@ -130,8 +132,10 @@ This is a client-side, static web application with no complex dependencies or ba
 
 -   **Issue**: Application does not load or displays a blank page.
     -   **Solution**: Ensure you have run `npm install` and `npm run dev` correctly. Check your browser's developer console for any JavaScript errors. Clear your browser cache if issues persist.
+-   **Issue**: Simulations reach a limit at 500 cycles or before.
+    -   **Solution**: This is expected behavior. The simulation stops when the reserve ratio can no longer be maintained at the minimum unit of $0.01, or when 500 cycles have been reached.
 -   **Issue**: Visualizations are not updating or appear static.
-    -   **Solution**: Verify that the simulation is running (not paused) and that the "Simulation Speed" is set appropriately. Check for any errors in the browser console that might indicate issues with D3.js or Chart.js.
+    -   **Solution**: Verify that the simulation is running (not paused) and that the "Simulation Speed" is set appropriately. Check for any errors in the browser console.
 
 ## 🤝 Contributing
 
@@ -141,7 +145,7 @@ This is a client-side, static web application with no complex dependencies or ba
 </a>
 </div>
 
-We welcome contributions from the community! If you have suggestions for improvements, new features, or bug fixes, please feel free to open an issue or submit a pull request. Before contributing, please ensure your changes align with the project's existing code style and testing practices.
+We welcome contributions from the community! If you have suggestions for improvements, new features, or bug fixes, please feel free to open an issue or submit a pull request. Before contributing, please ensure your changes maintain GitHub Pages compatibility and align with the project's existing code style.
 
 ## 🌟 Support the Project
 
@@ -155,4 +159,4 @@ We welcome contributions from the community! If you have suggestions for improve
 
 ## ⚠️ Disclaimer
 
-This simulator is intended for educational purposes only to illustrate the principles of fractional-reserve banking and the concept of money creation. It simplifies complex economic models and should not be taken as a precise representation of real-world financial systems or used for financial advice. The "double-spend problem" in this context refers to the economic phenomenon of money multiplication, not a security vulnerability in digital currencies.
+This simulator is intended for educational purposes only to illustrate the principles of fractional-reserve banking and the concept of money creation through the banking multiplier effect. It simplifies complex economic models and should not be taken as a precise representation of real-world financial systems or used for financial advice.
