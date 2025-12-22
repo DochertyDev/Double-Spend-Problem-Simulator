@@ -1,8 +1,10 @@
 <p align="center">
-  <a href="https://github.com/DochertyDev/Double-Spend-Problem-Simulator">
+  <a href="https://dochertydev.github.io/Double-Spend-Problem-Simulator/">
     <img src="images/apple-touch-icon.png" width="150" alt="Double Spend Problem Simulator">
   </a>
 </p>
+
+_Click the logo above to try the app via website!_
 
 <h1 align="center">
 Double Spend Problem Simulator
@@ -12,7 +14,7 @@ Double Spend Problem Simulator
 
 <div align="center">
 
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![GitHub Stars](https://img.shields.io/github/stars/DochertyDev/Double-Spend-Problem-Simulator)](https://github.com/DochertyDev/Double-Spend-Problem-Simulator)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![Site](https://img.shields.io/badge/Webpage-fafaf9)](https://dochertydev.github.io/Double-Spend-Problem-Simulator/) [![GitHub Stars](https://img.shields.io/github/stars/DochertyDev/Double-Spend-Problem-Simulator)](https://github.com/DochertyDev/Double-Spend-Problem-Simulator)
 
 </div>
 
